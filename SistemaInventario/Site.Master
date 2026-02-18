@@ -67,7 +67,7 @@
                     IncludeStyleBlock="true" Orientation="Horizontal" Font-Names="Arial" Font-Bold="True">
                     <Items>
                         <asp:MenuItem Text="Maestros" Value="1000">
-                            <asp:MenuItem Value="1" Text="Clientes" NavigateUrl="~/Maestros/ClienteSTEK.aspx"></asp:MenuItem>
+                            <asp:MenuItem Value="1" Text="Clientes" NavigateUrl="~/Maestros/ClientesUnitarioKarina.aspx"></asp:MenuItem>
                             <asp:MenuItem Value="2" Text="Proveedores" NavigateUrl="~/Maestros/ProveedoresUnitarioTEK.aspx"></asp:MenuItem>
                         <%--    <asp:MenuItem Value="90" Text="Bancos" NavigateUrl="~/Maestros/Bancos.aspx"></asp:MenuItem>--%>
                           <%--  <asp:MenuItem Value="10" Text="Linea" NavigateUrl="~/Maestros/LineaSalcedo.aspx"></asp:MenuItem>

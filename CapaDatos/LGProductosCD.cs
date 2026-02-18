@@ -9695,8 +9695,9 @@ namespace CapaDatos
             }
             finally { dta_consulta.Dispose(); }
         }
-       
-        public DataTable F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_KarinaCliente(LGProductosCE objEntidadBE)
+
+
+        public DataTable F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_CLIENTE_PROVEEDOR_KARINA(LGProductosCE objEntidadBE)
         {
             DataTable dta_consulta = null;
 
@@ -9711,10 +9712,11 @@ namespace CapaDatos
                     {
                         sql_comando.Connection = sql_conexion;
                         sql_comando.CommandType = CommandType.StoredProcedure;
-                        sql_comando.CommandText = "PA_LGCLIENTE_APLICACIONES_LISTAR";
+                        sql_comando.CommandText = "PA_LGCLIENTE_APLICACIONES_PROVEEDORKARINA_EXCEL";
 
-                        if (objEntidadBE.DscProducto.TrimEnd().TrimStart() != "")
-                            sql_comando.Parameters.Add("@Descripcion", SqlDbType.VarChar, 150).Value = objEntidadBE.DscProducto;
+
+                        sql_comando.Parameters.Add("@NroRuc", SqlDbType.VarChar, 150).Value = objEntidadBE.NroRuc;
+                            sql_comando.Parameters.Add("@CodCtaCte", SqlDbType.Int).Value = objEntidadBE.CodCtaCte;  
 
                         dta_consulta = new DataTable();
 

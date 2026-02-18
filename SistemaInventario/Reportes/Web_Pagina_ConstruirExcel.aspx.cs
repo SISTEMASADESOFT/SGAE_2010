@@ -198,9 +198,9 @@ namespace SistemaInventario.Reportes
                     P_Reporte_Producto_Aplicacion();
                     break;
                 case 10002:
-                    P_Reporte_Producto_Aplicacion_Excel_ClienteKarina();
-
+                    P_Reporte_Producto_Aplicacion_Excel_Cliente_Proveedor_Karina();
                     break;
+            
             }
         }
 
@@ -6537,7 +6537,9 @@ namespace SistemaInventario.Reportes
         }
 
 
-        public void P_Reporte_Producto_Aplicacion_Excel_ClienteKarina()
+
+
+        public void P_Reporte_Producto_Aplicacion_Excel_Cliente_Proveedor_Karina()
         {
             FileInfo newFile = new FileInfo(Server.MapPath(Request["NombreArchivo"]).ToString());
 
@@ -6552,13 +6554,14 @@ namespace SistemaInventario.Reportes
 
             objEntidad = new LGProductosCE();
 
-            objEntidad.DscProducto = Request["DscProducto"].ToString();
+            objEntidad.NroRuc = Request["NroRuc"].ToString();
+            objEntidad.CodCtaCte = Convert.ToInt32(Request["CodCtaCte"]);
 
             DataTable dtTabla = null;
 
             objOperacion = new LGProductosCN();
 
-            dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_KarinaCliente(objEntidad);
+            dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_CLIENTE_PROVEEDOR_KARINA(objEntidad);
 
             ws.Cells["A2"].LoadFromDataTable(dtTabla, true);
 

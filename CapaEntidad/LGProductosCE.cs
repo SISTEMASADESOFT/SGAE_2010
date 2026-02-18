@@ -350,6 +350,8 @@ public class LGProductosCE
     public int CodCategoriaIgv { get; set; }
 
     public int FlagStock { get; set; }
+
+    public string NroRuc { get; set; }
 }
 
 public class Imagenes {
