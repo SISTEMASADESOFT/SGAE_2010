@@ -194,6 +194,13 @@ namespace SistemaInventario.Reportes
                 case 1510:
                     P_ReporteVentasDetallado_Solo_Una_Moneda_Simple();
                     break;
+                case 10001:
+                    P_Reporte_Producto_Aplicacion();
+                    break;
+                case 10002:
+                    P_Reporte_Producto_Aplicacion_Excel_ClienteKarina();
+
+                    break;
             }
         }
 
@@ -6489,6 +6496,7 @@ namespace SistemaInventario.Reportes
             }
         }
 
+   //franco
         public void P_Reporte_Producto_Aplicacion()
         {
             FileInfo newFile = new FileInfo(Server.MapPath(Request["NombreArchivo"]).ToString());
@@ -6503,7 +6511,7 @@ namespace SistemaInventario.Reportes
             LGProductosCN objOperacion = null;
 
             objEntidad = new LGProductosCE();
-                              
+
             objEntidad.IdFamilia = Convert.ToInt32(Request["IDFamilia"]);
             objEntidad.DscProducto = Request["DscProducto"].ToString();
             objEntidad.CodMarca = Convert.ToInt32(Request["CodMarca"]);
@@ -6517,7 +6525,44 @@ namespace SistemaInventario.Reportes
 
             ws.Cells["A2"].LoadFromDataTable(dtTabla, true);
 
-          
+
+            pck.Save();
+
+            MemoryStream msMemoria = null;
+
+            Response.ContentType = "application/octet-stream";
+            Response.AppendHeader("Content-Disposition", "attachment; filename=" + Request["NombreArchivo"].ToString());
+            Response.TransmitFile(Server.MapPath(Request["NombreArchivo"].ToString()));
+            Response.End();
+        }
+
+
+        public void P_Reporte_Producto_Aplicacion_Excel_ClienteKarina()
+        {
+            FileInfo newFile = new FileInfo(Server.MapPath(Request["NombreArchivo"]).ToString());
+
+            ExcelPackage pck = new ExcelPackage(newFile);
+
+            var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
+
+            ws.DeleteRow(2, 50000, true);
+
+            LGProductosCE objEntidad = null;
+            LGProductosCN objOperacion = null;
+
+            objEntidad = new LGProductosCE();
+
+            objEntidad.DscProducto = Request["DscProducto"].ToString();
+
+            DataTable dtTabla = null;
+
+            objOperacion = new LGProductosCN();
+
+            dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_KarinaCliente(objEntidad);
+
+            ws.Cells["A2"].LoadFromDataTable(dtTabla, true);
+
+
             pck.Save();
 
             MemoryStream msMemoria = null;

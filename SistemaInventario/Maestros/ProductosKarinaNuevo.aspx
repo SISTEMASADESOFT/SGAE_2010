@@ -459,6 +459,8 @@
                     </table>
                 </div>
                 <div class="linea-button">
+                <asp:Button ID="btnExcel" runat="server" Text="Excel" CssClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                        Font-Names="Arial" Width="120" />
                     <asp:Button ID="btnBuscarConsulta" runat="server" Text="Buscar" CssClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
                         Font-Names="Arial" Width="120" />
                 </div>

@@ -78,6 +78,24 @@ $(document).ready(function () {
         minLength: 3
     });
 
+
+     //franco
+
+     $('#MainContent_btnExcel').click(function () {
+        if (!F_SesionRedireccionar(AppSession)) return false;
+
+            //        if (F_PermisoOpcion(CodigoMenu, 1000306, '') === "0") return false; //Entra a /Scripts/Utilitarios.js.F_PermisosOpcion para mas informac
+
+        try { 
+           F_Producto_Aplicacion_Excel();
+            return false;
+        }
+        catch (e) {
+            toastr.warning("Error Detectado: " + e);
+        }
+    });
+
+
     
     $('#MainContent_txtDescripcionConsulta').autocomplete({
         source: function (request, response) {
@@ -3505,4 +3523,27 @@ function F_Correo(Fila) {
         return false;
     }
     return true;
+}
+
+//franco 
+function F_Producto_Aplicacion_Excel() {
+
+    if ($.trim($('#MainContent_txtDescripcionConsulta').val()) == '') {
+        toastr.warning("Ingrese descripción / RUC");
+        return false;
+    }
+
+    var rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx?';
+    rptURL += 'CodMenu=10002&';
+    rptURL += 'DscProducto=' + encodeURIComponent($('#MainContent_txtDescripcionConsulta').val()) + '&';
+    rptURL += 'NombreArchivo=' + encodeURIComponent('Xls_Productos_Aplicacion.xlsx') + '&';
+    rptURL += 'NombreHoja=' + encodeURIComponent('Aplicacion');
+
+    var Params = 'width=' + (screen.width * 0.48) +
+        ', height=' + (screen.height * 0.40) +
+        ', top=0, left=0, directories=no, menubar=no, toolbar=no, location=no,' +
+        ' resizable=yes, scrollbars=yes, titlebar=yes';
+
+    window.open(rptURL, "PopUpRpt", Params);
+    return false;
 }

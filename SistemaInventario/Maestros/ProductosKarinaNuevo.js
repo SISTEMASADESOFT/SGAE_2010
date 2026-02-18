@@ -52,6 +52,20 @@ $(document).ready(function () {
 
     $('#divTabs').tabs();
 
+    //franco
+      $('#MainContent_btnExcel').click(function () {
+
+        if (!F_SesionRedireccionar(AppSession)) return false;
+//       if (F_PermisoOpcion(CodigoMenu,1000306,'') === "0") return false; //Entra a /Scripts/Utilitarios.js.F_PermisosOpcion para mas informacion
+
+        try { 
+           F_Producto_Aplicacion_Excel();
+            return false;
+        }
+        catch (e) {
+            toastr.warning("Error Detectado: " + e);
+        }
+    });
 
 
     $('#MainContent_txtDescripcionAgregar').autocomplete({
@@ -3366,4 +3380,32 @@ function F_Inicializar_Tabla_Almacenes_Stocks() {
     });
 
     return true;
+}
+
+//generar excel franco
+function F_Producto_Aplicacion_Excel() {
+    var Cuerpo = '#MainContent_';
+    var rptURL = '';
+    var Params = 'width=' + (screen.width * 0.48) + ', height=' + (screen.height * 0.40) + ', top=0, left=0, directories=no, menubar=no, toolbar=no, location=no, resizable=yes, scrollbars=yes, titlebar=yes';
+    var TipoArchivo = 'application/pdf';
+    var CodMenu = 10002;
+    var NombreArchivo = 'Xls_Productos_Aplicacion.xlsx';
+    var NombreHoja = 'Aplicacion';
+
+    if ($.trim($('#MainContent_txtDescripcionConsulta').val())=='')
+        $('#hfCodMarca').val('0');
+
+    rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx';
+      rptURL = rptURL + '?';
+    rptURL = rptURL + 'CodMenu=' + CodMenu + '&';
+    rptURL = rptURL + 'IDFamilia=' + $('#MainContent_ddlFamiliaConsulta').val() + '&';
+    rptURL = rptURL + 'DscProducto=' + $('#MainContent_txtDescripcionConsulta').val() + '&';
+    rptURL = rptURL + 'CodMarca=' + $('#hfCodMarca').val() + '&';
+    rptURL = rptURL + 'CodEstado=' + $('#MainContent_ddlFiltroCodEstado').val()  + '&';
+    rptURL = rptURL + 'NombreArchivo=' + NombreArchivo + '&';
+    rptURL = rptURL + 'NombreHoja=' + NombreHoja + '&';
+
+    window.open(rptURL, "PopUpRpt", Params);
+
+    return false;
 }

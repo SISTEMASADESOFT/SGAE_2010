@@ -348,6 +348,8 @@ public class LGProductosCE
     public int CodServicioDetraccion { get; set; }
 
     public int CodCategoriaIgv { get; set; }
+
+    public int FlagStock { get; set; }
 }
 
 public class Imagenes {
