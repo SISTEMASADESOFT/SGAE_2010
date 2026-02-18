@@ -43,6 +43,8 @@ namespace SistemaInventario.Compras
             CallbackManager.Register(F_Ventas_NET);
             CallbackManager.Register(F_Series_Documentos_NET);
             CallbackManager.Register(F_Auditoria_NET);
+            CallbackManager.Register(F_DetalleNP_NET);
+            CallbackManager.Register(F_AgregarTemporalNP_NET);
         }
 
         private string _menu = "3000"; private string _opcion = "2";
@@ -56,6 +58,7 @@ namespace SistemaInventario.Compras
             P_Inicializar_GrillaVacia_ConsultaFactura();
             P_Inicializar_GrillaVacia_DetalleOC();
             P_Inicializar_GrillaVacia_Ventas();
+            P_Inicializar_GrillaVacia_DetalleNP();
             Session["datos"] = true;
         }
 
@@ -155,14 +158,18 @@ namespace SistemaInventario.Compras
             String str_grvDetalleArticulo_html = "";
             String str_ddlEstado_html = "";
             String str_ddlTipoDocConsulta_html = "";
+            String str_dllUsuarionNP_html = "";
+            String str_dllSucursal_html = "";
             Hashtable obj_parametros = null;
+
 
             try
             {
                 obj_parametros = SistemaInventario.Clases.JsonSerializer.FromJson<Hashtable>(arg);
 
                 P_Controles_Inicializar(obj_parametros, ref ddlFormaPago, ref ddlMoneda, ref ddlIgv, ref ddlTipoDocumento, ref ddlClasificacion, ref ddlCategoria,
-                    ref ddlClasificacionConsulta, ref ddlCajaFisica, ref  ddlSerieDocVentas, ref ddlEmpleadoConsulta, ref ddlEstado, ref ddlTipoDocConsulta);
+                    ref ddlClasificacionConsulta, ref ddlCajaFisica, ref  ddlSerieDocVentas, ref ddlEmpleadoConsulta, ref ddlEstado, ref ddlTipoDocConsulta
+                    ,ref dllUsuarionNP, ref dllSucursal);
                 P_Obtener_TipoCambio(obj_parametros, ref TC);
 
                 str_ddl_formapago_html = Mod_Utilitario.F_GetHtmlForControl(ddlFormaPago);
@@ -179,6 +186,8 @@ namespace SistemaInventario.Compras
                 str_grvDetalleArticulo_html = Mod_Utilitario.F_GetHtmlForControl(grvDetalleArticulo);
                 str_ddlEstado_html = Mod_Utilitario.F_GetHtmlForControl(ddlEstado);
                 str_ddlTipoDocConsulta_html = Mod_Utilitario.F_GetHtmlForControl(ddlTipoDocConsulta);
+                str_dllUsuarionNP_html = Mod_Utilitario.F_GetHtmlForControl(dllUsuarionNP);
+                str_dllSucursal_html = Mod_Utilitario.F_GetHtmlForControl(dllSucursal);
                 try { CodCajaFisica = Convert.ToInt32(Session["CodCajaFisica"]); }
                 catch (Exception) { }
 
@@ -212,7 +221,9 @@ namespace SistemaInventario.Compras
                 str_grvConsuArticulo_html + "~" +  //17
                 str_grvDetalleArticulo_html + "~" +  //18
                 str_ddlEstado_html + "~" +  //19
-                str_ddlTipoDocConsulta_html;  //20
+                str_ddlTipoDocConsulta_html + "~" +  //20
+                str_dllUsuarionNP_html + "~" + //21
+                str_dllSucursal_html; //22
 
             return str_resultado;
 
@@ -984,6 +995,106 @@ namespace SistemaInventario.Compras
             return str_resultado;
         }
 
+
+        public String F_DetalleNP_NET(String arg)
+        {
+            String str_resultado = "";
+            String str_mensaje_operacion = "";
+            int int_resultado_operacion = 0;
+            String str_grvDetalleNP_html = "";
+            Hashtable obj_parametros = null;
+
+            try
+            {
+                obj_parametros = SistemaInventario.Clases.JsonSerializer.FromJson<Hashtable>(arg);
+
+                P_DetalleNP(obj_parametros, ref grvDetalleNP);
+
+                if (grvDetalleNP.Rows.Count == 0)
+                {
+                    P_Inicializar_GrillaVacia_DetalleNP();
+                    str_mensaje_operacion = "No se encontraron registros.";
+                }
+                else
+                    str_mensaje_operacion = "";
+
+                str_grvDetalleNP_html = Mod_Utilitario.F_GetHtmlForControl(grvDetalleNP);
+                int_resultado_operacion = 1;
+            }
+            catch (Exception ex)
+            {
+                str_mensaje_operacion = "Ha ocurrido el siguiente error: " + ex.Message;
+                int_resultado_operacion = 0;
+            }
+
+            str_resultado =
+                Convert.ToString(int_resultado_operacion)
+                + "~" +
+                str_mensaje_operacion
+                + "~" +
+                str_grvDetalleNP_html;
+
+            return str_resultado;
+        }
+
+
+
+        public String F_AgregarTemporalNP_NET(String arg)
+        {
+            String str_resultado = "";
+            String str_mensaje_operacion = "";
+            String str_grvDetalleArticulo_html = "";
+            int int_resultado_operacion = 0;
+            int Codigo = 0;
+            Decimal Total = 0;
+            Decimal SubTotal = 0;
+            Decimal Igv = 0;
+            Decimal Acuenta = 0;
+            String MsgError = "";
+            Int32 NotaPedido = 0;
+            Hashtable obj_parametros = null;
+
+            try
+            {
+                obj_parametros = SistemaInventario.Clases.JsonSerializer.FromJson<Hashtable>(arg);
+                P_AgregarTemporalNP(obj_parametros, ref Codigo, ref MsgError);
+                P_CargarGrillaTemporalNP(obj_parametros, Codigo, ref grvDetalleArticulo, ref SubTotal, ref Igv, ref Total, ref Acuenta, ref NotaPedido);
+                str_grvDetalleArticulo_html = Mod_Utilitario.F_GetHtmlForControl(grvDetalleArticulo);
+
+                int_resultado_operacion = 1;
+                str_mensaje_operacion = "";
+            }
+            catch (Exception ex)
+            {
+                str_mensaje_operacion = "Ha ocurrido el siguiente error: " + ex.Message;
+                int_resultado_operacion = 0;
+            }
+
+            str_resultado =
+                Convert.ToString(int_resultado_operacion)
+                + "~" +
+                str_mensaje_operacion
+                + "~" +
+                MsgError
+                + "~" +
+                Codigo.ToString()
+                + "~" +
+                str_grvDetalleArticulo_html
+                 + "~" +
+                Math.Round(Total, 2).ToString()
+                + "~" +
+                Math.Round(Igv, 2).ToString()
+                 + "~" +
+                Math.Round(SubTotal, 2).ToString()
+                 + "~" +
+                Math.Round(Acuenta, 2).ToString()
+                + "~" +
+                Convert.ToInt32(NotaPedido);
+
+            return str_resultado;
+        }
+
+
         public String F_FacturacionOC_NET(String arg)
         {
             String str_resultado = "";
@@ -1164,7 +1275,8 @@ namespace SistemaInventario.Compras
              ref DropDownList ddl_combomoneda, ref DropDownList ddl_comboigv, ref DropDownList ddl_combodocumento,
              ref DropDownList ddl_comboclasificacion, ref DropDownList ddl_combocategoria, ref DropDownList ddl_comboclasificacionconsulta,
              ref DropDownList ddl_CajaFisica, ref DropDownList ddl_comboserieventas, ref DropDownList ddl_empleadoconsulta,
-             ref DropDownList ddl_comboestado, ref DropDownList ddl_combodocumentoconsulta)
+             ref DropDownList ddl_comboestado, ref DropDownList ddl_combodocumentoconsulta,
+             ref DropDownList ddl_Usuario, ref DropDownList ddl_sucursal)
         {
             DataTable dta_consulta = null;
 
@@ -1310,6 +1422,35 @@ namespace SistemaInventario.Compras
             ddl_comboestado.DataValueField = "Codigo";
             ddl_comboestado.DataBind();
             ddl_comboestado.Items.Insert(0, new ListItem("TODOS", "0"));
+
+
+            UsuarioCE objusuario = new UsuarioCE();
+            UsuarioCN objoperacionusuario = new UsuarioCN();
+            dta_consulta = null;
+
+            objusuario.CodAlmacen = Convert.ToInt32(Session["CodSede"]);
+
+            dta_consulta = objoperacionusuario.F_UsuarioNP_Listar_Almacen(objusuario);
+            ddl_Usuario.Items.Clear();
+
+            ddl_Usuario.DataSource = dta_consulta;
+            ddl_Usuario.DataTextField = "NombreUsuario";
+            ddl_Usuario.DataValueField = "CodUsuario";
+            ddl_Usuario.DataBind();
+
+
+            TCAlmacenCE objAlmacen = new TCAlmacenCE();
+            TCAlmacenCN objoperacionAlmacen = new TCAlmacenCN();
+            dta_consulta = null;
+            dta_consulta = objoperacionAlmacen.F_SucursalNP_Listar();
+            ddl_sucursal.Items.Clear();
+
+            ddl_sucursal.DataSource = dta_consulta;
+            ddl_sucursal.DataTextField = "NombreSucursal";
+            ddl_sucursal.DataValueField = "CodSurcursal";
+            ddl_sucursal.DataBind();
+
+
         }
 
         public void P_Obtener_TipoCambio(Hashtable objTablaFiltro, ref Decimal TipoCambio)
@@ -1578,6 +1719,35 @@ namespace SistemaInventario.Compras
             grvVentas.DataBind();
         }
 
+
+        public void P_Inicializar_GrillaVacia_DetalleNP()
+        {
+            DataTable dta_consultadetalle = null;
+            DataRow dtr_filadetalle = null;
+
+            dta_consultadetalle = new DataTable();
+
+            dta_consultadetalle.Columns.Add("CodDetalle", typeof(string));
+            dta_consultadetalle.Columns.Add("Usuario", typeof(string));
+            dta_consultadetalle.Columns.Add("Cantidad", typeof(string));
+            dta_consultadetalle.Columns.Add("Fecha", typeof(string));
+
+
+            dtr_filadetalle = dta_consultadetalle.NewRow();
+
+            dtr_filadetalle[0] = "";
+            dtr_filadetalle[1] = "";
+            dtr_filadetalle[2] = "";
+            dtr_filadetalle[3] = "";
+
+
+            dta_consultadetalle.Rows.Add(dtr_filadetalle);
+
+            grvDetalleNP.DataSource = dta_consultadetalle;
+            grvDetalleNP.DataBind();
+        }
+    
+
         public void P_Cargar_Grilla(Hashtable objTablaFiltro, ref GridView grvConsulta)
         {
             LGProductosCE objEntidad = null;
@@ -1742,6 +1912,177 @@ namespace SistemaInventario.Compras
             }
             grvDetalle.DataSource = dta_consulta;
             grvDetalle.DataBind();
+        }
+
+
+
+        public void P_DetalleNP(Hashtable objTablaFiltro, ref GridView grvDetalleNP)
+        {
+            DocumentoVentaCabCE objEntidad = null;
+            DocumentoVentaCabCN objOperacion = null;
+
+            DataTable dta_consulta = null;
+
+            objEntidad = new DocumentoVentaCabCE();
+
+            if (Convert.ToInt32(objTablaFiltro["Filtro_ChkFecha"]) == 1)
+            {
+                objEntidad.Desde = Convert.ToDateTime(objTablaFiltro["Filtro_Desde"]);
+                objEntidad.Hasta = Convert.ToDateTime(objTablaFiltro["Filtro_Hasta"]);
+            }
+            else
+            {
+                objEntidad.Desde = Convert.ToDateTime("01/01/1990");
+                objEntidad.Hasta = Convert.ToDateTime("01/01/1990");
+            }
+
+            objEntidad.Usuario = Convert.ToString(objTablaFiltro["Filtro_Usuario"]);
+            objEntidad.CodAlmacen = Convert.ToInt32(objTablaFiltro["Filtro_Sucursal"]);
+            objEntidad.CodDocumentoVenta = Convert.ToInt32(objTablaFiltro["Filtro_CodDocumentoVenta"]);
+
+
+            objOperacion = new DocumentoVentaCabCN();
+
+            dta_consulta = objOperacion.F_ItemNP_Listar_Ventas(objEntidad);
+
+            grvDetalleNP.DataSource = dta_consulta;
+            grvDetalleNP.DataBind();
+        }
+
+
+        public void P_AgregarTemporalNP(Hashtable objTablaFiltro, ref Int32 Codigo, ref String MsgError)
+        {
+            DocumentoVentaCabCE objEntidad = null;
+            DocumentoVentaCabCN objOperacion = null;
+
+            String XmlDetalle = "";
+            int iCodEmpresa = 3;
+
+            objEntidad = new DocumentoVentaCabCE();
+
+            objEntidad.CodEmpresa = iCodEmpresa;
+            objEntidad.CodAlmacen = Convert.ToInt32(Session["CodSede"]);
+            objEntidad.CodTipoDoc = Convert.ToInt32(objTablaFiltro["Filtro_CodTipoDoc"]);
+            objEntidad.SerieDoc = Convert.ToString(objTablaFiltro["Filtro_SerieDoc"]); ;
+
+            objEntidad.NumeroDoc = Convert.ToString(objTablaFiltro["Filtro_NumeroDoc"]);
+            objEntidad.FechaEmision = Convert.ToDateTime(objTablaFiltro["Filtro_FechaEmision"]);
+            objEntidad.FechaVencimiento = Convert.ToDateTime(objTablaFiltro["Filtro_Vencimiento"]);
+            objEntidad.CodCliente = Convert.ToInt32(objTablaFiltro["Filtro_CodCliente"]);
+
+            objEntidad.CodFormaPago = Convert.ToInt32(objTablaFiltro["Filtro_CodFormaPago"]);
+            objEntidad.CodMoneda = Convert.ToInt32(objTablaFiltro["Filtro_CodMoneda"]);
+            objEntidad.TipoCambio = Convert.ToDecimal(objTablaFiltro["Filtro_TipoCambio"]);
+            objEntidad.SubTotal = Convert.ToDecimal(objTablaFiltro["Filtro_SubTotal"]);
+
+            objEntidad.CodUsuario = Convert.ToInt32((Session["CodUsuario"]));
+            objEntidad.CodProforma = Convert.ToInt32(objTablaFiltro["Filtro_CodProforma"]);
+            objEntidad.Igv = Convert.ToDecimal(objTablaFiltro["Filtro_Igv"]);
+            objEntidad.Total = Convert.ToDecimal(objTablaFiltro["Filtro_Total"]);
+
+            objEntidad.CodGuia = Convert.ToInt32(objTablaFiltro["Filtro_CodGuia"]);
+            objEntidad.Descuento = Convert.ToInt32(objTablaFiltro["Filtro_Descuento"]);
+
+            objEntidad.FechaEntrega = Convert.ToDateTime(objTablaFiltro["Filtro_FechaEmision"]);
+            objEntidad.CodigoPagina = Convert.ToInt32(objTablaFiltro["Filtro_CodigoPagina"]);
+
+            dynamic jArr2 = Newtonsoft.Json.JsonConvert.DeserializeObject(objTablaFiltro["Filtro_XmlDetalle"].ToString());
+
+            foreach (dynamic item in jArr2)
+            {
+                XmlDetalle = XmlDetalle + "<D ";
+                XmlDetalle = XmlDetalle + " CodArticulo = '" + item.CodArticulo + "'";
+                XmlDetalle = XmlDetalle + " Cantidad = '" + item.Cantidad + "'";
+                XmlDetalle = XmlDetalle + " Precio = '" + item.Precio + "'";
+                XmlDetalle = XmlDetalle + " PrecioDscto = '" + item.PrecioDscto + "'";
+                XmlDetalle = XmlDetalle + " Costo = '" + item.Costo + "'";
+                XmlDetalle = XmlDetalle + " CodUm = '" + item.CodUm + "'";
+                XmlDetalle = XmlDetalle + " CodDetalle = '" + item.CodDetalle + "'";
+                XmlDetalle = XmlDetalle + " OC = '" + item.OC + "'";
+                XmlDetalle = XmlDetalle + " Descripcion = '" + Convert.ToString(item.Descripcion).Replace("'", "&apos;") + "'";
+                XmlDetalle = XmlDetalle + " Acuenta = '" + item.Acuenta + "'";
+                XmlDetalle = XmlDetalle + " CodTipoDoc = '" + item.CodTipoDoc + "'";
+                XmlDetalle = XmlDetalle + " Fecha = '" + item.Fecha + "'";
+                XmlDetalle = XmlDetalle + " />";
+            }
+
+            XmlDetalle = "<R><XmlLC> " + XmlDetalle.Replace("&", "&amp;").Replace("”", "&quot;") + "</XmlLC></R>";
+            XmlDetalle = "<?xml version=" + '\u0022' + "1.0" + '\u0022' + " encoding=" + '\u0022' + "iso-8859-1" + '\u0022' + "?>" + XmlDetalle;
+
+            objEntidad.XmlDetalle = XmlDetalle;
+
+            objOperacion = new DocumentoVentaCabCN();
+
+            if (Convert.ToInt32(objTablaFiltro["Filtro_CodigoTemporal"]) == 0)
+            {
+                objOperacion.F_TemporalFacturacionDet_Insert(objEntidad);
+                Codigo = objEntidad.CodDocumentoVenta;
+            }
+            else
+            {
+                objEntidad.CodDocumentoVenta = Convert.ToInt32(objTablaFiltro["Filtro_CodigoTemporal"]);
+                objOperacion.F_TemporalFacturacionDetalle_Insert(objEntidad);
+                Codigo = Convert.ToInt32(objTablaFiltro["Filtro_CodigoTemporal"]);
+            }
+            MsgError = objEntidad.MsgError;
+        }
+
+
+        public void P_CargarGrillaTemporalNP(Hashtable objTablaFiltro, Int32 Codigo, ref GridView grvDetalle,
+        ref Decimal SubTotalFactura, ref Decimal IgvFactura, ref Decimal TotalFactura, ref Decimal Acuenta, ref Int32 NotaPedido)
+        {
+            DocumentoVentaCabCE objEntidad = null;
+            DocumentoVentaCabCN objOperacion = null;
+
+            objEntidad = new DocumentoVentaCabCE();
+            objOperacion = new DocumentoVentaCabCN();
+
+            DataTable dta_consulta = null;
+            if (Codigo != 0)
+            {
+                objEntidad.Igv = Convert.ToDecimal(objTablaFiltro["Filtro_TasaIgv"]);
+                objEntidad.CodMoneda = Convert.ToInt32(objTablaFiltro["Filtro_CodMoneda"]);
+                objEntidad.Tasa = Convert.ToDecimal(objTablaFiltro["Filtro_Tasa"]);
+                objEntidad.CodigoTemporalNP = Convert.ToInt32(objTablaFiltro["Filtro_CodigoTemporalNP"]);
+                objEntidad.CodDocumentoVenta = Codigo;
+
+                dta_consulta = objOperacion.F_TemporalFacturacionDetNP_Listar(objEntidad);
+            }
+            if (dta_consulta.Rows.Count > 0)
+            {
+                if (Convert.ToInt32(objTablaFiltro["Filtro_NotaPedido"]) == 1)
+                {
+                    for (int j = 0; j < dta_consulta.Rows.Count; j++)
+                    {
+                        if (Convert.ToDecimal(dta_consulta.Rows[j]["CodTipoProducto"]) == 1)
+                            TotalFactura += Convert.ToDecimal(dta_consulta.Rows[j]["Importe"]);
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < dta_consulta.Rows.Count; j++)
+                    {
+                        TotalFactura += Convert.ToDecimal(dta_consulta.Rows[j]["Importe"]);
+                        Acuenta += Convert.ToDecimal(dta_consulta.Rows[j]["Acuenta"]);
+                    }
+                }
+                if (Convert.ToInt32(objTablaFiltro["Filtro_FlagIgv"]) == 1)
+                {
+                    SubTotalFactura = TotalFactura / Convert.ToDecimal(objTablaFiltro["Filtro_TasaIgvDscto"]);
+                    IgvFactura = SubTotalFactura * (Convert.ToDecimal(objTablaFiltro["Filtro_TasaIgvDscto"]) - 1);
+                }
+                else
+                {
+                    SubTotalFactura = TotalFactura;
+                    IgvFactura = TotalFactura * (Convert.ToDecimal(objTablaFiltro["Filtro_TasaIgvDscto"]) - 1);
+                    TotalFactura = SubTotalFactura + IgvFactura;
+                }
+            }
+            grvDetalle.DataSource = dta_consulta;
+            grvDetalle.DataBind();
+
+            try { NotaPedido = Convert.ToInt32(dta_consulta.Rows[0]["NotaPedido"]); }
+            catch (Exception exxx) { NotaPedido = 0; };
         }
 
         public void P_GrabarDocumento(Hashtable objTablaFiltro, ref String MsgError, ref Int32 Codigo)

@@ -74,6 +74,16 @@ $(document).ready(function () {
         minLength: 3
     });
 
+          $("#divNoProcesados").dialog({
+        resizable: false,
+        modal: true,
+        title: "Consulta de Productos No Procesados",
+        title_html: true,
+        height: 450,
+        width: 780,
+        autoOpen: false
+    });
+
     $('#MainContent_txtClienteConsulta').autocomplete({
         source: function (request, response) {
             $.ajax({
@@ -142,6 +152,32 @@ $(document).ready(function () {
             //F_BuscarDireccionPorDefecto();
         },
         minLength: 3
+    });
+
+
+    $('#MainContent_btnItemNP').click(function () {
+    if (!F_SesionRedireccionar(AppSession)) return false;
+   // if (F_PermisoOpcion(CodigoMenu, 4000101, '') === "0") return false; //Entra a /Scripts/Utilitarios.js.F_PermisosOpcion para mas informac
+        try 
+        {
+              
+
+
+             $('#MainContent_txtArticulo').val('');
+                
+                $('#divNoProcesados').dialog('open');
+                 F_BuscarNP();
+             
+                
+        }
+        catch (e) {
+
+            alertify.log("Error Detectado: " + e);
+        }
+
+
+        return false;
+
     });
         
     $("#MainContent_txtDistrito").bind("propertychange change keyup paste input", function(){
@@ -1336,6 +1372,8 @@ function F_Controles_Inicializar() {
                         F_Update_Division_HTML('div_EmpleadoConsulta', result.split('~')[16]);
                         F_Update_Division_HTML('div_Estado', result.split('~')[19]);
                         F_Update_Division_HTML('div_TipoDocConsulta', result.split('~')[20]);
+                         F_Update_Division_HTML('div_UsuarioNP', result.split('~')[21]);
+                        F_Update_Division_HTML('div_SucursalNP', result.split('~')[22]);
                         GridArticulosInicializado = result.split('~')[17];
                         GridDetalleDocumento = result.split('~')[18];
                         CodCajaFisica = result.split('~')[14];
@@ -1350,6 +1388,10 @@ function F_Controles_Inicializar() {
                         $('#MainContent_ddlMoneda').css('background', '#FFFFE0');
                         $('#MainContent_ddlFormaPago').css('background', '#FFFFE0');
                         $('#MainContent_ddlSerie').css('background', '#FFFFE0');
+                        $('#MainContent_dllUsuarionNP').css('background', '#FFFFE0');
+                        $('#MainContent_dllSucursal').css('background', '#FFFFE0');
+                         $('#MainContent_txtDesdeNP').css('background', '#FFFFE0');
+                        $('#MainContent_txtHastaNP').css('background', '#FFFFE0');
                         $('#MainContent_ddlCajaFisica').css('background', '#FFFFE0');
                         $('#MainContent_ddlClasificacion').css('background', '#FFFFE0');
                         $('#MainContent_ddlClasificacionConsulta').css('background', '#FFFFE0');
@@ -1710,7 +1752,7 @@ try
                 arrDetalle.push(objDetalle);
 
                 var objParams = {
-                                        Filtro_CodTipoDoc: "2",
+                                        Filtro_CodTipoDoc: "1",
                                         Filtro_SerieDoc: $(Contenedor + 'ddlSerie').val(),
                                         Filtro_NumeroDoc: $(Contenedor + 'txtNumero').val(),
                                         Filtro_FechaEmision: $(Contenedor + 'txtEmision').val(),
@@ -4406,6 +4448,152 @@ function ValidarRuc(valor) {
     return false
 }
 
+function F_AgregarArticuloNP(ControlID, DirectoBoton) {
+    if (AgregandoProducto === true)
+        return true;
+    try {
+    
+        var lblcodproducto_grilla = '';
+        var lblcodunidadventa_grilla = '';
+        var lblcosto_grilla = '';
+        var chkSi = '';
+        var txtcantidad_grilla = '';
+        var txtprecio_grilla = '';
+        var arrDetalle = new Array();
+        var hfcodunidadventa_grilla = '';
+        var hfcosto_grilla = '';
+        var chkNotaPedido = 0;
+        var chkServicio = 0;
+        var lblProducto = "";
+        var tasaigv = 1;
+        var FlagIgv = 0;
+
+        imgAgregar_grilla = '#' + ControlID;
+        lblCodigoDetalle_grilla = imgAgregar_grilla.replace('imgAgregar', 'lblIDtemporal');
+        //agregado agutierrez
+        if ($('#MainContent_chkConIgvMaestro').is(':checked')) {
+            tasaigv = parseFloat($("#MainContent_ddlIgv option:selected").text()) + parseFloat(1);
+            FlagIgv = 1;
+        }    
+                
+        //ctrlPosActual = chkSi; //asigno el control actual donde se volvera a posicionar
+        var objDetalle = {
+        CodArticulo: 1,
+        Cantidad: 1,
+        Precio: 1,
+        PrecioDscto:1,
+        Costo: 1,
+        CodUm: 22,
+        Descripcion: 'KIT EMP BBA INYECC TD123 F12',
+        CodDetalle: 0,
+        Acuenta: 0,
+        CodTipoDoc: 0,
+        Filtro_FlagIgv: FlagIgv,
+        Filtro_Flag: 0,
+        Filtro_TasaIgv: tasaigv,
+        Filtro_TasaIgvDscto: parseFloat($("#MainContent_ddlIgv option:selected").text()) + parseFloat(1)   
+        };
+        arrDetalle.push(objDetalle);
+
+
+        var Contenedor = '#MainContent_';
+
+        var objParams = {
+            Filtro_CodTipoDoc: 1,
+            Filtro_SerieDoc: $(Contenedor + 'ddlSerie').val(),
+            Filtro_NumeroDoc: $(Contenedor + 'txtNumero').val(),
+            Filtro_FechaEmision: $(Contenedor + 'txtEmision').val(),
+            Filtro_Vencimiento: $(Contenedor + 'txtVencimiento').val(),
+            Filtro_CodCliente: $(Contenedor + 'hfCodCtaCte').val(),
+            Filtro_CodFormaPago: $(Contenedor + 'ddlFormaPago').val(),
+            Filtro_CodMoneda: $(Contenedor + 'ddlMoneda').val(),
+            Filtro_TipoCambio: $(Contenedor + 'lblTC').text(),
+            Filtro_SubTotal: $(Contenedor + 'txtSubTotal').val(),
+            Filtro_CodProforma: 0,
+            Filtro_Igv: $(Contenedor + 'txtIgv').val(),
+            Filtro_Total: $(Contenedor + 'txtTotal').val(),
+            Filtro_CodGuia: 0,
+            Filtro_Descuento: 0,
+            Filtro_FlagIgv: FlagIgv,
+            Filtro_TasaIgv: tasaigv,
+            Filtro_TasaIgvDscto: parseFloat($("#MainContent_ddlIgv option:selected").text()) + parseFloat(1),
+            Filtro_CodigoTemporal: $('#hfCodigoTemporal').val(),
+            Filtro_Servicio: chkServicio,
+            Filtro_NotaPedido: chkNotaPedido,
+           // Filtro_CodigoPagina: CodigoPagina,
+            Filtro_CodigoTemporalNP:parseFloat($(lblCodigoDetalle_grilla).text()),
+            Filtro_XmlDetalle: Sys.Serialization.JavaScriptSerializer.serialize(arrDetalle)
+        };
+
+        var arg = Sys.Serialization.JavaScriptSerializer.serialize(objParams);
+        //MostrarEspera(true);
+        AgregandoProducto = true;
+        F_AgregarTemporalNP_NET(arg, function (result) {
+        AgregandoProducto = false;
+
+            //MostrarEspera(false);
+
+            var str_resultado_operacion = result.split('~')[0];
+            var str_mensaje_operacion = result.split('~')[1];
+
+            if (str_resultado_operacion == "1") {
+                $('#hfCodigoTemporal').val(result.split('~')[3]);
+                $('#MainContent_txtTotal').val(result.split('~')[5]);
+                $('#MainContent_txtIgv').val(result.split('~')[6]);
+                $('#MainContent_txtSubTotal').val(result.split('~')[7]);
+                $('#MainContent_txtAcuentaNV').val(parseFloat(result.split('~')[8]).toFixed(2));
+
+                if ($('#MainContent_ddlFormaPago').val() == "1" | $('#MainContent_ddlFormaPago').val() == "6" | $('#MainContent_ddlFormaPago').val() == "15" | $('#MainContent_ddlFormaPago').val() == "10")
+                    $('#MainContent_txtAcuenta').val(parseFloat($('#MainContent_txtTotal').val()) - parseFloat($('#MainContent_txtAcuentaNV').val()).toFixed(2));
+
+                F_Update_Division_HTML('div_grvDetalleArticulo', result.split('~')[4]);
+                $('#lblCantidadRegistro').text(F_Numerar_Grilla("grvDetalleArticulo", "lblimporte"));
+                $('.ccsestilo').css('background', '#FFFFE0');
+                F_LimpiarGrillaConsulta();
+                if (result.split('~')[2] == 'Los Producto(s) se han agregado con exito')
+                    alertify.log('Los Producto(s) se han agregado con exito');
+                $('#MainContent_chkDescripcion').focus();
+
+                if ($("#MainContent_chkTransferenciaGratuita").is(':checked')) {
+                    $('#MainContent_txtTotal').val('0.00');
+                    $('#MainContent_txtSubTotal').val('0.00');
+                    $('#MainContent_txtIgv').val('0.00');
+                }
+                else
+                    F_MostrarTotales();
+
+
+                $('#hfCodProductoAgregar').val('0');
+                $('#hfCostoAgregar').val('0');
+                $('#hfCodUmAgregar').val('0');
+                $('#MainContent_txtCodigoProductoAgregar').val('');
+                $('#MainContent_txtStockAgregar').val('');
+                $('#MainContent_txtUMAgregar').val('');
+                $('#MainContent_txtPrecioDisplay').val('0.00');
+                $('#MainContent_ddlPrecio').empty();
+                $('#MainContent_txtArticuloAgregar').val('');
+                $('#MainContent_txtCantidad').val('');
+                $("#hfMenorPrecioAgregar").val(0);
+                //$('#MainContent_txtArticulo').focus();
+
+                $('#divNoProcesados').dialog('close');
+                 F_TablaDown(); //$(ctrlPosActual).focus();
+
+                return false;
+            }
+            else {
+                alertify.log(result.split('~')[2]);
+            }
+            return false;
+        });
+    }
+    catch (e) {
+        MostrarEspera(false);
+        alertify.log("Error Detectado: " + e);
+    }
+}
+
+
 function F_FacturacionVentas() {
     var Contenedor = '#MainContent_';
     var Mensaje = "Ingrese los sgtes datos:";
@@ -4475,6 +4663,90 @@ function F_FacturacionVentas() {
         return false;
     }
 }
+
+
+function F_BuscarNP(){
+if (F_PermisoOpcion(CodigoMenu, CodigoInterno, 'Consultar') === "0") return false; //Entra a /Scripts/Utilitarios.js.F_PermisosOpcion para mas informacion
+
+       try 
+        {
+              
+              var chkFecha='0';
+              
+
+             
+              if ($('#MainContent_chkDesdeNP').is(':checked'))
+              chkFecha='1';
+
+              var objParams = {
+                                
+                                Filtro_Desde: $('#MainContent_txtDesdeNP').val(),
+                                Filtro_Hasta: $('#MainContent_txtHastaNP').val(),
+                                Filtro_ChkFecha: chkFecha,
+                                Filtro_Usuario: $('#MainContent_dllUsuarionNP').val(),
+                                Filtro_Sucursal: $('#MainContent_dllSucursal').val(),
+                                Filtro_CodDocumentoVenta: $('#hfCodigoTemporal').val()
+                               };
+
+                var arg = Sys.Serialization.JavaScriptSerializer.serialize(objParams);
+
+                MostrarEspera(true);
+                F_DetalleNP_NET(arg, function (result) {
+                 MostrarEspera(false);
+
+                    var str_resultado_operacion = "";
+                    var str_mensaje_operacion = "";
+
+                    str_resultado_operacion = result.split('~')[0];
+                    str_mensaje_operacion = result.split('~')[1];
+
+                if (str_resultado_operacion == "1") 
+                {
+                  
+                    F_Update_Division_HTML('div_DetalleNP', result.split('~')[2]); 
+                    
+//                    $('#lblGrillaConsulta').text(F_Numerar_Grilla("grvConsulta",'lblnumero')); 
+//                    var Cantidad = F_ContarRowsGrilla("grvConsulta", "chkEliminar", "lblnumero");
+//                    $('#lblCantidadRegistro').text(Cantidad);
+
+                    if (str_mensaje_operacion!='')                           
+                    alertify.log(str_mensaje_operacion);
+//                    $('#MainContent_grvConsulta .detallesart').each(function () {
+//                        var fila= '#' + this.id;                         
+//                        var lblEstado=fila.replace("lblnumero","lblEstado");                             
+//                        if($(lblEstado).text()==='ANULADO'){
+//                            $(lblEstado).css("color","red");
+//                        }else if ($(lblEstado).text()==='PENDIENTE'){
+//                            $(lblEstado).css("color","blue");
+//                        }else{
+//                            $(lblEstado).css("color","green");
+//                        }
+//                    });       
+                  
+                }
+                else 
+                {
+                    alertify.log(result.split('~')[1]);
+                }
+
+                $('#toolbar-options').toolbar({
+	content: '#toolbar-options',
+	position: 'bottom'
+});
+                return false;
+
+                });
+        }
+        
+        catch (e) 
+        {
+        MostrarEspera(false);
+            alertify.log("Error Detectado: " + e);
+            return false;
+        }
+
+}
+
 
 function F_ValidarVentas() {
     if (!F_ValidarAgregarVentas())

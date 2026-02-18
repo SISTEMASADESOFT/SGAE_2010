@@ -270,6 +270,10 @@
                     </table>
                 </div>
                 <div class="linea-button">
+
+                  <asp:Button ID="btnItemNP" runat="server" Text="No Procesados" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                                    Font-Names="Arial" Font-Bold="True" Width="120"  />
+
                     <asp:Button ID="btnNuevo" runat="server" Text="Limpiar (F1)" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
                         Font-Names="Arial" Font-Bold="True" Width="120" />
                     <asp:Button ID="btnActualizar" runat="server" Text="Actualizar" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
@@ -604,6 +608,106 @@
             </div>
         </div>
     </div>
+
+     <div id="divNoProcesados" style="display: none;">
+        <table cellpadding="0" cellspacing="0" width="400">
+            <tr>
+                <td style="padding-top: 8px;">
+                    <asp:CheckBox ID="chkDesdeNP" runat="server" Text="DESDE" Font-Bold="True" Checked="True" />
+                </td>
+                <td style="padding-left: 8px; padding-top: 10px;">
+                    <asp:TextBox ID="txtDesdeNP" runat="server" Width="55" Font-Names="Arial" ForeColor="Blue"
+                        Font-Bold="True" CssClass="Jq-ui-dtp" ReadOnly="True"></asp:TextBox>
+                </td>
+                <td style="padding-top: 10px; padding-left: 8px; font-weight: bold">
+                    HASTA
+                </td>
+                <td style="padding-top: 10px; padding-left: 8px;">
+                    <asp:TextBox ID="txtHastaNP" runat="server" Width="55" Font-Names="Arial" ForeColor="Blue"
+                        Font-Bold="True" CssClass="Jq-ui-dtp" ReadOnly="True"></asp:TextBox>
+                </td>
+                <td style="font-weight: bold; padding-top: 10px; padding-left: 8px;">
+                    Usuario
+                </td>
+                <td style="padding-top: 10px; padding-left: 8px;">
+                    <div id="div_UsuarioNP">
+                        <asp:DropDownList ID="dllUsuarionNP" runat="server" Font-Names="Arial" ForeColor="Blue"
+                            Font-Bold="True" Width="100px">
+                        </asp:DropDownList>
+                    </div>
+                </td>
+                <td style="font-weight: bold; padding-top: 10px; padding-left: 8px;">
+                    Sucursal
+                </td>
+                <td style="padding-top: 10px;padding-left: 8px;">
+                    <div id="div_SucursalNP">
+                        <asp:DropDownList ID="dllSucursal" runat="server" Font-Names="Arial" ForeColor="Blue"
+                            Font-Bold="True" Width="120px">
+                        </asp:DropDownList>
+                    </div>
+                </td>
+                
+                <td style="padding-top: 10px; padding-left: 30px;">
+                   
+                    <asp:Button ID="btnBuscarNP" runat="server" Text="Buscar" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                        Font-Names="Arial" Font-Bold="True" Width="120px" />
+                   
+                  
+                   </td> 
+            </tr>
+            <tr>
+                <td style="padding-top: 5px;" colspan='9'>
+                    <div id="div_DetalleNP">
+                        <asp:GridView ID="grvDetalleNP" runat="server" AutoGenerateColumns="False" border="0"
+                            CellPadding="0" CellSpacing="1" CssClass="GridView" GridLines="None" Width="720px">
+                            <Columns>
+                                <asp:TemplateField>
+                                                <ItemStyle Font-Bold="true" Width="26px" />
+                                                <ItemTemplate>
+                                                    <asp:ImageButton runat="server" ID="imgAgregar" ImageUrl="~/Asset/images/ok.gif"
+                                                        ToolTip="AGREGAR" OnClientClick="F_AgregarArticuloNP(this.id,1); return false;" />
+                                                </ItemTemplate>
+                                    </asp:TemplateField>     
+                                <asp:TemplateField HeaderText="ID">
+                                    <ItemStyle HorizontalAlign="Center" />
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblIDtemporal" Text='<%# Bind("CodDetalle") %>'></asp:Label>
+                                       
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Usuario">
+                                    <ItemStyle HorizontalAlign="Right" />
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblUsuario" Text='<%# Bind("Usuario") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Cantidad">
+                                    <ItemStyle HorizontalAlign="Right" />
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblCantidad" Text='<%# Bind("Cantidad") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Fecha">
+                                    <ItemStyle HorizontalAlign="Right" />
+                                    <ItemTemplate>
+                                        <asp:Label runat="server" ID="lblFecha" Text='<%# Bind("Fecha") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+
+
+
+
+
+
     <div id="divFacturacionOC" style="display: none;">
         <table cellpadding="0" cellspacing="0" width="850">
             <tr>
