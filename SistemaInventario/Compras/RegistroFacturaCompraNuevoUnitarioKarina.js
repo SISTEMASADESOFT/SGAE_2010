@@ -310,6 +310,20 @@ $(document).ready(function () {
     if (F_PermisoOpcion(CodigoMenu, 3000203, '') === "0") return false; //Entra a /Scripts/Utilitarios.js.F_PermisosOpcion para mas informac
         try 
         {
+
+                  var Cuerpo = '#MainContent_';
+                    var Cadena = 'Ingresar los sgtes. Datos:';
+
+                    if ($(Cuerpo + 'lblTC').text() == '0')
+                    Cadena = Cadena + '<p></p>' + 'Tipo de Cambio';
+
+                    if (Cadena != 'Ingresar los sgtes. Datos:') {
+                        alertify.log(Cadena);
+                        return false;
+                    }
+
+                
+
                 $('#MainContent_txtArticulo').val('');
                 $('#MainContent_chkServicios').prop('checked',false);
                 $('#MainContent_chkNotaPedido').prop('checked',false);
