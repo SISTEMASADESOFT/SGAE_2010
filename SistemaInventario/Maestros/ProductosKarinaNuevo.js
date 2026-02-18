@@ -56,7 +56,7 @@ $(document).ready(function () {
       $('#MainContent_btnExcel').click(function () {
 
         if (!F_SesionRedireccionar(AppSession)) return false;
-//       if (F_PermisoOpcion(CodigoMenu,1000306,'') === "0") return false; //Entra a /Scripts/Utilitarios.js.F_PermisosOpcion para mas informacion
+       if (F_PermisoOpcion(CodigoMenu,1000306,'') === "0") return false; //Entra a /Scripts/Utilitarios.js.F_PermisosOpcion para mas informacion
 
         try { 
            F_Producto_Aplicacion_Excel();
