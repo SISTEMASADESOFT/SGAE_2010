@@ -2326,6 +2326,9 @@ $(document).on("change", "select[id $= 'MainContent_ddlMonedaLC']",function () {
 //cambio de tipo de documento
 function F_CambioTipo() {
     if (!F_SesionRedireccionar(AppSession)) return false;
+
+    var PermisoFechaAnterior = F_PermisoOpcion_SinAviso(CodigoMenu, 4000212, '');
+
     if ($("#MainContent_ddlTipoDoc").val()=='1')
     {
       $('#MainContent_chkConIgvMaestro').prop('disabled', false);
@@ -2336,6 +2339,39 @@ function F_CambioTipo() {
       $('#MainContent_chkConIgvMaestro').prop('disabled', true);
       $('#MainContent_chkSinIgvMaestro').prop('disabled', true);
     }
+
+     var tipoDoc = $('#MainContent_ddlTipoDoc').val();
+
+
+       if (PermisoFechaAnterior == 0) {
+        
+          $('#MainContent_txtEmision').prop('readonly',true);
+          $('#MainContent_txtEmision').prop('disabled',true);
+          $('#MainContent_txtNumero').prop('readonly',true);
+          $('#MainContent_txtNumero').prop('disabled',true);
+          } 
+          
+         
+          else {
+        
+        if (tipoDoc == '16') {
+                      $('#MainContent_txtEmision').prop('readonly',false);
+          $('#MainContent_txtEmision').prop('disabled',false);
+          $('#MainContent_txtNumero').prop('readonly',false);
+          $('#MainContent_txtNumero').prop('disabled',false);
+       
+       
+        } else {
+           
+          $('#MainContent_txtEmision').prop('readonly',true);
+          $('#MainContent_txtEmision').prop('disabled',true);
+          $('#MainContent_txtNumero').prop('readonly',true);
+          $('#MainContent_txtNumero').prop('disabled',true);
+       
+       
+         }   }
+
+
 
      $("#MainContent_ddlTipoDoc2").val($("#MainContent_ddlTipoDoc").val());
        
@@ -3487,6 +3523,8 @@ function F_Controles_Inicializar() {
                         $('#MainContent_ddlSerieCT').val(65);
                         $('#MainContent_ddlSerieCT').css('background', '#FFFFE0');
 
+                        var tipoDoc = $('#MainContent_ddlTipoDoc').val();
+
                         if (PermisoFechaAnterior==0)
                         {
                             $('#MainContent_txtEmision').prop('readonly',true);
@@ -3496,10 +3534,19 @@ function F_Controles_Inicializar() {
                         }                                                                          
                         else
                         {
-                            $('#MainContent_txtEmision').prop('readonly',false); 
+//                            $('#MainContent_txtEmision').prop('readonly',false); 
+//                            $('#MainContent_txtEmision').prop('disabled',false); 
+//                            $('#MainContent_txtNumero').prop('readonly',false); 
+//                            $('#MainContent_txtNumero').prop('disabled',false); 
+
+                         if  (tipoDoc =='16')
+                        {   $('#MainContent_txtEmision').prop('readonly',false); 
                             $('#MainContent_txtEmision').prop('disabled',false); 
                             $('#MainContent_txtNumero').prop('readonly',false); 
                             $('#MainContent_txtNumero').prop('disabled',false); 
+                            }
+
+
                         }  
                         
                         F_CambioSerie();
