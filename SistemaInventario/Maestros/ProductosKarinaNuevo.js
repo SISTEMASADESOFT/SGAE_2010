@@ -56,7 +56,7 @@ $(document).ready(function () {
       $('#MainContent_btnExcel').click(function () {
 
         if (!F_SesionRedireccionar(AppSession)) return false;
-//       if (F_PermisoOpcion(CodigoMenu,1000306,'') === "0") return false; //Entra a /Scripts/Utilitarios.js.F_PermisosOpcion para mas informacion
+       if (F_PermisoOpcion(CodigoMenu,1000306,'') === "0") return false; //Entra a /Scripts/Utilitarios.js.F_PermisosOpcion para mas informacion
 
         try { 
            F_Producto_Aplicacion_Excel();
@@ -3388,7 +3388,7 @@ function F_Producto_Aplicacion_Excel() {
     var rptURL = '';
     var Params = 'width=' + (screen.width * 0.48) + ', height=' + (screen.height * 0.40) + ', top=0, left=0, directories=no, menubar=no, toolbar=no, location=no, resizable=yes, scrollbars=yes, titlebar=yes';
     var TipoArchivo = 'application/pdf';
-    var CodMenu = 10002;
+    var CodMenu = 10001;
     var NombreArchivo = 'Xls_Productos_Aplicacion.xlsx';
     var NombreHoja = 'Aplicacion';
 

@@ -1442,7 +1442,7 @@ function F_Controles_Inicializar() {
                         $('#MainContent_ddlSerie').css('background', '#FFFFE0');
                          $('#MainContent_dllUsuarionNP').css('background', '#FFFFE0');
                         $('#MainContent_dllSucursal').css('background', '#FFFFE0');
-                              $('#MainContent_txtDesdeNP').css('background', '#FFFFE0');
+                         $('#MainContent_txtDesdeNP').css('background', '#FFFFE0');
                         $('#MainContent_txtHastaNP').css('background', '#FFFFE0');
                         $('#MainContent_ddlCajaFisica').css('background', '#FFFFE0');
                         $('#MainContent_ddlClasificacion').css('background', '#FFFFE0');
@@ -5720,6 +5720,7 @@ function F_ActualizarDescripcion(Fila) {
 
 
 }
+
 
 function F_AgregarArticuloNP(ControlID, DirectoBoton) {
     if (AgregandoProducto === true)

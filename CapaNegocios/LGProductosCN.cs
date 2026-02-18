@@ -2131,18 +2131,18 @@ namespace CapaNegocios
             }
         }
 
-        public DataTable F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_KarinaCliente(LGProductosCE objEntidadBE)
+
+        public DataTable F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_CLIENTE_PROVEEDOR_KARINA(LGProductosCE objEntidadBE)
         {
             try
             {
-                return obj.F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_KarinaCliente(objEntidadBE);
+                return obj.F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_CLIENTE_PROVEEDOR_KARINA(objEntidadBE);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-
         public DataTable F_TCCUENTACORRIENTE_LISTADO_REPORTE()
         {
             try
