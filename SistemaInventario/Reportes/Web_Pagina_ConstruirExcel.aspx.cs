@@ -198,9 +198,9 @@ namespace SistemaInventario.Reportes
                     P_Reporte_Producto_Aplicacion();
                     break;
                 case 10002:
-                    P_Reporte_Producto_Aplicacion_Excel_ClienteKarina();
-
+                    P_Reporte_Producto_Aplicacion_Excel_Cliente_Proveedor_Karina();
                     break;
+            
             }
         }
 
@@ -6497,47 +6497,88 @@ namespace SistemaInventario.Reportes
         }
 
    //franco
-        public void P_Reporte_Producto_Aplicacion()
+  public void P_Reporte_Producto_Aplicacion()
+{
+    FileInfo newFile = new FileInfo(Server.MapPath(Request["NombreArchivo"]).ToString());
+
+    using (ExcelPackage pck = new ExcelPackage(newFile))
+    {
+        var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
+
+        // Limpia datos antiguos debajo del header
+        ws.DeleteRow(6, 50000, true);
+
+        LGProductosCE objEntidad = new LGProductosCE();
+        objEntidad.IdFamilia = Convert.ToInt32(Request["IDFamilia"]);
+        objEntidad.DscProducto = Request["DscProducto"].ToString();
+        objEntidad.CodMarca = Convert.ToInt32(Request["CodMarca"]);
+        objEntidad.CodEstado = Convert.ToInt32(Request["CodEstado"]);
+
+        LGProductosCN objOperacion = new LGProductosCN();
+        DataTable dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR(objEntidad);
+
+        // ======================================
+        // 1) FECHA EN J1
+        // ======================================
+        ws.Cells["I1"].Value = "Fecha:";
+        ws.Cells["J1"].Value = DateTime.Now;
+        ws.Cells["J1"].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+        ws.Cells["I1:J1"].Style.Font.Bold = true;
+
+        // ======================================
+        // 2) CANTIDAD DE REGISTROS EN A4
+        // ======================================
+        ws.Cells["A4"].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
+
+        ws.Cells["A4"].Style.Font.Bold = true;
+
+        // ======================================
+        // 3) CARGAR DATA DESDE A6 (porque A5 es header)
+        // ======================================
+        ws.Cells["A6"].LoadFromDataTable(dtTabla, false);
+
+        // ======================================
+        // 4) FORMATO HEADER (FILA 5)
+        // ======================================
+        int totalCols = dtTabla.Columns.Count;
+
+        using (var rng = ws.Cells[5, 1, 5, totalCols])
         {
-            FileInfo newFile = new FileInfo(Server.MapPath(Request["NombreArchivo"]).ToString());
-
-            ExcelPackage pck = new ExcelPackage(newFile);
-
-            var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
-
-            ws.DeleteRow(2, 50000, true);
-
-            LGProductosCE objEntidad = null;
-            LGProductosCN objOperacion = null;
-
-            objEntidad = new LGProductosCE();
-
-            objEntidad.IdFamilia = Convert.ToInt32(Request["IDFamilia"]);
-            objEntidad.DscProducto = Request["DscProducto"].ToString();
-            objEntidad.CodMarca = Convert.ToInt32(Request["CodMarca"]);
-            objEntidad.CodEstado = Convert.ToInt32(Request["CodEstado"]);
-
-            DataTable dtTabla = null;
-
-            objOperacion = new LGProductosCN();
-
-            dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR(objEntidad);
-
-            ws.Cells["A2"].LoadFromDataTable(dtTabla, true);
-
-
-            pck.Save();
-
-            MemoryStream msMemoria = null;
-
-            Response.ContentType = "application/octet-stream";
-            Response.AppendHeader("Content-Disposition", "attachment; filename=" + Request["NombreArchivo"].ToString());
-            Response.TransmitFile(Server.MapPath(Request["NombreArchivo"].ToString()));
-            Response.End();
+            rng.Style.Font.Bold = true;
+            rng.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+            rng.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+            rng.Style.WrapText = true;
         }
 
+        // ======================================
+        // 5) CONGELAR CABECERA (fila 5)
+        // ======================================
+        ws.View.FreezePanes(6, 1); // congela hasta fila 5
 
-        public void P_Reporte_Producto_Aplicacion_Excel_ClienteKarina()
+        // ======================================
+        // 6) AJUSTAR COLUMNAS AUTOMATICAMENTE
+        // ======================================
+        if (ws.Dimension != null)
+            ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+        // Ajustes manuales importantes
+        ws.Column(1).Width = 22; // CodigoUnico
+        ws.Column(2).Width = 18; // Codigo
+        ws.Column(3).Width = 60; // Producto
+
+        pck.Save();
+    }
+
+    Response.ContentType = "application/octet-stream";
+    Response.AppendHeader("Content-Disposition", "attachment; filename=" + Request["NombreArchivo"].ToString());
+    Response.TransmitFile(Server.MapPath(Request["NombreArchivo"].ToString()));
+    Response.End();
+}
+
+
+
+
+        public void P_Reporte_Producto_Aplicacion_Excel_Cliente_Proveedor_Karina()
         {
             FileInfo newFile = new FileInfo(Server.MapPath(Request["NombreArchivo"]).ToString());
 
@@ -6552,13 +6593,14 @@ namespace SistemaInventario.Reportes
 
             objEntidad = new LGProductosCE();
 
-            objEntidad.DscProducto = Request["DscProducto"].ToString();
+            objEntidad.NroRuc = Request["NroRuc"].ToString();
+            objEntidad.CodCtaCte = Convert.ToInt32(Request["CodCtaCte"]);
 
             DataTable dtTabla = null;
 
             objOperacion = new LGProductosCN();
 
-            dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_KarinaCliente(objEntidad);
+            dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_CLIENTE_PROVEEDOR_KARINA(objEntidad);
 
             ws.Cells["A2"].LoadFromDataTable(dtTabla, true);
 

@@ -3528,14 +3528,14 @@ function F_Correo(Fila) {
 //franco 
 function F_Producto_Aplicacion_Excel() {
 
-    if ($.trim($('#MainContent_txtDescripcionConsulta').val()) == '') {
-        toastr.warning("Ingrese descripción / RUC");
-        return false;
-    }
+   
+    var CodCtaCte = $('#hfCodCtaCte').val();
+    var NroRuc = $('#hfNroRuc').val();
 
     var rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx?';
     rptURL += 'CodMenu=10002&';
-    rptURL += 'DscProducto=' + encodeURIComponent($('#MainContent_txtDescripcionConsulta').val()) + '&';
+    rptURL += 'NroRuc=' + encodeURIComponent(NroRuc) + '&';
+    rptURL += 'CodCtaCte=' + encodeURIComponent(CodCtaCte) + '&';
     rptURL += 'NombreArchivo=' + encodeURIComponent('Xls_Productos_Aplicacion.xlsx') + '&';
     rptURL += 'NombreHoja=' + encodeURIComponent('Aplicacion');
 
@@ -3547,3 +3547,4 @@ function F_Producto_Aplicacion_Excel() {
     window.open(rptURL, "PopUpRpt", Params);
     return false;
 }
+
