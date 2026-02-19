@@ -68,10 +68,23 @@
                     <Items>
                         <asp:MenuItem Text="Maestros" Value="1000">
                             <asp:MenuItem Value="1" Text="Clientes" NavigateUrl="~/Maestros/ClientesUnitarioKarina.aspx"></asp:MenuItem>
+
                             <asp:MenuItem Value="2" Text="Proveedores" NavigateUrl="~/Maestros/ProveedoresUnitarioTek.aspx"></asp:MenuItem>
                             <asp:MenuItem Value="3" Text="Productos" NavigateUrl="~/Maestros/ProductosKarinaNuevo.aspx"></asp:MenuItem>
                             <asp:MenuItem Value="4" Text="Tipo de Cambio" NavigateUrl="~/Maestros/TipoCambio.aspx"></asp:MenuItem>
                             <asp:MenuItem Value="6" Text="Mantenimiento Serie" NavigateUrl="~/Maestros/MantenimientoSerie.aspx"></asp:MenuItem>
+
+                            
+                        <%--    <asp:MenuItem Value="90" Text="Bancos" NavigateUrl="~/Maestros/Bancos.aspx"></asp:MenuItem>--%>
+                          <%--  <asp:MenuItem Value="10" Text="Linea" NavigateUrl="~/Maestros/LineaSalcedo.aspx"></asp:MenuItem>
+                            <asp:MenuItem Value="25" Text="Procedencia" NavigateUrl="~/Maestros/ProcedenciaSalcedo.aspx"></asp:MenuItem>
+                            <asp:MenuItem Value="24" Text="Marca" NavigateUrl="~/Maestros/MarcaSalcedo.aspx"></asp:MenuItem>
+                            <asp:MenuItem Value="11" Text="Modelo" NavigateUrl="~/Maestros/Modelo.aspx"></asp:MenuItem>--%>
+                                                     
+                                             
+                         <%--            <asp:MenuItem Value="5" Text="Anulacion Documentos" NavigateUrl="~/Maestros/AnulacionDocumento.aspx"></asp:MenuItem>   --%>                         
+                         <%--   <asp:MenuItem Value="6" Text="Mantenimiento Serie" NavigateUrl="~/Maestros/MantenimientoSerie.aspx"></asp:MenuItem>   --%>                         
+
                             <asp:MenuItem Value="7" Text="Familias" NavigateUrl="~/Maestros/Familias.aspx"></asp:MenuItem>
 			                <asp:MenuItem Value="9" Text="Perfiles" NavigateUrl="~/Maestros/Perfiles.aspx"></asp:MenuItem>
                             <asp:MenuItem Value="12" Text="Servicios" NavigateUrl="~/Maestros/Servicios.aspx?Mn=1000&Op=12"></asp:MenuItem>

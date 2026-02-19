@@ -6499,82 +6499,159 @@ namespace SistemaInventario.Reportes
    //franco
         public void P_Reporte_Producto_Aplicacion()
         {
-            FileInfo newFile = new FileInfo(Server.MapPath(Request["NombreArchivo"]).ToString());
+            string plantillaRel = Request["NombreArchivo"].ToString();
+            string plantillaAbs = Server.MapPath(plantillaRel);
 
-            ExcelPackage pck = new ExcelPackage(newFile);
+          
+            byte[] templateBytes = System.IO.File.ReadAllBytes(plantillaAbs);
 
-            var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
+            using (var ms = new MemoryStream(templateBytes))
+            using (ExcelPackage pck = new ExcelPackage(ms))
+            {
+                var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
 
-            ws.DeleteRow(2, 50000, true);
+                
+                LGProductosCE objEntidad = new LGProductosCE();
+                objEntidad.IdFamilia = Convert.ToInt32(Request["IDFamilia"]);
+                objEntidad.DscProducto = Request["DscProducto"].ToString();
+                objEntidad.CodMarca = Convert.ToInt32(Request["CodMarca"]);
+                objEntidad.CodEstado = Convert.ToInt32(Request["CodEstado"]);
 
-            LGProductosCE objEntidad = null;
-            LGProductosCN objOperacion = null;
+                LGProductosCN objOperacion = new LGProductosCN();
+                DataTable dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR(objEntidad);
 
-            objEntidad = new LGProductosCE();
+                int lastCol = dtTabla.Columns.Count;
+              
+                for (int i = ws.MergedCells.Count - 1; i >= 0; i--)
+                {
+                    string addr = ws.MergedCells[i];
+                    var rg = ws.Cells[addr];
+                    if (rg.Start.Row <= 4 && rg.End.Row <= 4)
+                        rg.Merge = false;
+                }
+          
+                int clearToCol = Math.Max(lastCol + 5, 20); 
+                ws.Cells[1, 1, 4, clearToCol].Clear();               
+                ws.DeleteRow(5, 50000, true);                
+                ws.Cells[2, 1, 3, lastCol].Merge = true;
+                ws.Cells[2, 1].Value = "REPORTE PRODUCTO";
+                ws.Cells[2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                ws.Cells[2, 1].Style.Font.Bold = true;
+                ws.Cells[2, 1].Style.Font.Size = 14;
+                
+                ws.Cells[4, 1].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
+                ws.Cells[4, 1].Style.Font.Bold = true;
 
-            objEntidad.IdFamilia = Convert.ToInt32(Request["IDFamilia"]);
-            objEntidad.DscProducto = Request["DscProducto"].ToString();
-            objEntidad.CodMarca = Convert.ToInt32(Request["CodMarca"]);
-            objEntidad.CodEstado = Convert.ToInt32(Request["CodEstado"]);
+               
+                ws.Cells[4, lastCol - 1].Value = "Fecha:";
+                ws.Cells[4, lastCol - 1].Style.Font.Bold = true;
 
-            DataTable dtTabla = null;
+                ws.Cells[4, lastCol].Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                ws.Cells[4, lastCol].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
 
-            objOperacion = new LGProductosCN();
+              
+                ws.Cells["A5"].LoadFromDataTable(dtTabla, true);
+                ws.Row(5).Style.Font.Bold = true;
 
-            dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR(objEntidad);
+               
+                ws.View.FreezePanes(6, 1);
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+                
+                byte[] outBytes = pck.GetAsByteArray();
 
-            ws.Cells["A2"].LoadFromDataTable(dtTabla, true);
-
-
-            pck.Save();
-
-            MemoryStream msMemoria = null;
-
-            Response.ContentType = "application/octet-stream";
-            Response.AppendHeader("Content-Disposition", "attachment; filename=" + Request["NombreArchivo"].ToString());
-            Response.TransmitFile(Server.MapPath(Request["NombreArchivo"].ToString()));
-            Response.End();
+                Response.Clear();
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_Producto.xlsx");
+                Response.BinaryWrite(outBytes);
+                Response.End();
+            }
         }
-
-
-
 
         public void P_Reporte_Producto_Aplicacion_Excel_Cliente_Proveedor_Karina()
         {
-            FileInfo newFile = new FileInfo(Server.MapPath(Request["NombreArchivo"]).ToString());
+            // Ruta física de la PLANTILLA
+            string plantillaRel = Request["NombreArchivo"].ToString();
+            string plantillaAbs = Server.MapPath(plantillaRel);
 
-            ExcelPackage pck = new ExcelPackage(newFile);
+            // Leer bytes de la plantilla (evita bloqueo y no ensucia la plantilla)
+            byte[] templateBytes = System.IO.File.ReadAllBytes(plantillaAbs);
 
-            var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
+            using (var ms = new MemoryStream(templateBytes))
+            using (ExcelPackage pck = new ExcelPackage(ms))
+            {
+                var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
 
-            ws.DeleteRow(2, 50000, true);
+                // ===== Parámetros =====
+                LGProductosCE objEntidad = new LGProductosCE();
 
-            LGProductosCE objEntidad = null;
-            LGProductosCN objOperacion = null;
+                objEntidad.NroRuc = string.IsNullOrWhiteSpace(Request["NroRuc"])
+                    ? null
+                    : Request["NroRuc"].ToString();
 
-            objEntidad = new LGProductosCE();
+                int codCtaCte;
+                int.TryParse(Request["CodCtaCte"], out codCtaCte);
+                objEntidad.CodCtaCte = codCtaCte; // si viene 0, tu SP ya lo toma como "todo" (según lo que arreglaste)
 
-            objEntidad.NroRuc = Request["NroRuc"].ToString();
-            objEntidad.CodCtaCte = Convert.ToInt32(Request["CodCtaCte"]);
+                // ===== Datos =====
+                LGProductosCN objOperacion = new LGProductosCN();
+                DataTable dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_CLIENTE_PROVEEDOR_KARINA(objEntidad);
 
-            DataTable dtTabla = null;
+                int lastCol = dtTabla.Columns.Count;
 
-            objOperacion = new LGProductosCN();
+                // ===== Limpiar cabecera de plantilla (filas 1 a 4) =====
+                for (int i = ws.MergedCells.Count - 1; i >= 0; i--)
+                {
+                    string addr = ws.MergedCells[i];
+                    var rg = ws.Cells[addr];
+                    if (rg.Start.Row <= 4 && rg.End.Row <= 4)
+                        rg.Merge = false;
+                }
 
-            dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_CLIENTE_PROVEEDOR_KARINA(objEntidad);
+                int clearToCol = Math.Max(lastCol + 5, 20);
+                ws.Cells[1, 1, 4, clearToCol].Clear();
 
-            ws.Cells["A2"].LoadFromDataTable(dtTabla, true);
+                // ===== Limpiar data vieja (desde fila 5 hacia abajo) =====
+                ws.DeleteRow(5, 50000, true);
 
+                // ===== Título (solo fila 2, no fila 2-3) =====
+                ws.Cells[2, 1, 2, lastCol].Merge = true;
+                ws.Cells[2, 1].Value = "REPORTE CLIENTE / PROVEEDOR";
+                ws.Cells[2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                ws.Cells[2, 1].Style.Font.Bold = true;
+                ws.Cells[2, 1].Style.Font.Size = 14;
 
-            pck.Save();
+                // ===== Cantidad y Fecha =====
+                ws.Cells[4, 1].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
+                ws.Cells[4, 1].Style.Font.Bold = true;
 
-            MemoryStream msMemoria = null;
+                // Fecha a la derecha
+                ws.Cells[4, lastCol - 1].Value = "Fecha:";
+                ws.Cells[4, lastCol - 1].Style.Font.Bold = true;
 
-            Response.ContentType = "application/octet-stream";
-            Response.AppendHeader("Content-Disposition", "attachment; filename=" + Request["NombreArchivo"].ToString());
-            Response.TransmitFile(Server.MapPath(Request["NombreArchivo"].ToString()));
-            Response.End();
+                ws.Cells[4, lastCol].Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                ws.Cells[4, lastCol].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+
+                // ===== Tabla =====
+                ws.Cells["A5"].LoadFromDataTable(dtTabla, true);
+                ws.Row(5).Style.Font.Bold = true;
+
+                // Congelar encabezados
+                ws.View.FreezePanes(6, 1);
+
+                // Ajustar ancho
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                // Descargar sin guardar en disco
+                byte[] outBytes = pck.GetAsByteArray();
+
+                Response.Clear();
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_Cliente_Proveedor.xlsx");
+                Response.BinaryWrite(outBytes);
+                Response.End();
+            }
         }
+
 
         public void P_ReporteVentasDetallado_Povis()
         {
