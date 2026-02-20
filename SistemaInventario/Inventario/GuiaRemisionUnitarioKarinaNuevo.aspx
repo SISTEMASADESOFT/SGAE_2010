@@ -581,6 +581,9 @@
                       <asp:Button ID="btnReporte" runat="server" Text="Reporte" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
                         Font-Names="Arial" Font-Bold="True" Width="120" />
 
+                        <asp:Button ID="btnExcel" runat="server" Text="Excel" CssClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                        Font-Names="Arial" Width="120" />
+
                 </div>
             </div>
 

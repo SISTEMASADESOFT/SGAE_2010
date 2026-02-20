@@ -589,6 +589,26 @@ namespace CapaNegocios
           }
 
       }
+      //franco 19/02/26
+
+      public DataTable F_ORDENCOMPRA_LISTAR_EXCEL(NotaIngresoSalidaCabCE objEntidadBE)
+      {
+
+          try
+          {
+
+              return obj.F_ORDENCOMPRA_LISTAR_EXCEL(objEntidadBE);
+
+          }
+          catch (Exception ex)
+          {
+
+              throw ex;
+          }
+
+      }
+    
+ 
 
       public NotaIngresoSalidaCabCE F_Eliminacion_NotaIngreso(NotaIngresoSalidaCabCE objEntidadBE)
       {

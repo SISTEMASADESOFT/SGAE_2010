@@ -2358,6 +2358,59 @@ namespace CapaDatos
           }
           finally { dta_consulta.Dispose(); }
       }
+      //franco
+
+
+      public DataTable F_ORDENCOMPRA_LISTAR_EXCEL(NotaIngresoSalidaCabCE objEntidadBE)
+      {
+          DataTable dta_consulta = null;
+
+          try
+          {
+              using (SqlConnection sql_conexion = new SqlConnection())
+              {
+                  sql_conexion.ConnectionString = ConfigurationManager.ConnectionStrings["BDCONEXION"].ConnectionString;
+                  sql_conexion.Open();
+
+                  using (SqlCommand sql_comando = new SqlCommand())
+                  {
+                      sql_comando.Connection = sql_conexion;
+                      sql_comando.CommandType = CommandType.StoredProcedure;
+                      sql_comando.CommandText = "PA_ORDENCOMPRA_LISTAR_EXCEL";
+
+                      // Solo filtramos por proveedor si viene > 0, si no => NULL (trae todo)
+                      if (objEntidadBE.CodCtaCteConsulta > 0)
+                          sql_comando.Parameters.Add("@CodCtaCte", SqlDbType.Int).Value = objEntidadBE.CodCtaCteConsulta;
+                      else
+                          sql_comando.Parameters.Add("@CodCtaCte", SqlDbType.Int).Value = DBNull.Value;
+
+                      // Como tu JS no manda otros filtros, los mandamos NULL
+                      sql_comando.Parameters.Add("@CodAlmacen", SqlDbType.Int).Value = DBNull.Value;
+                      sql_comando.Parameters.Add("@CodEmpresa", SqlDbType.Int).Value = DBNull.Value;
+                      sql_comando.Parameters.Add("@Desde", SqlDbType.Int).Value = DBNull.Value;
+                      sql_comando.Parameters.Add("@Hasta", SqlDbType.Int).Value = DBNull.Value;
+                      sql_comando.Parameters.Add("@SerieDoc", SqlDbType.VarChar, 4).Value = DBNull.Value;
+                      sql_comando.Parameters.Add("@NumeroDoc", SqlDbType.VarChar, 8).Value = DBNull.Value;
+                      sql_comando.Parameters.Add("@CodTipoOperacion", SqlDbType.Int).Value = DBNull.Value;
+                      sql_comando.Parameters.Add("@CodTipoDocsust", SqlDbType.Int).Value = DBNull.Value;
+                      sql_comando.Parameters.Add("@CodTipoDoc", SqlDbType.Int).Value = DBNull.Value;
+                      sql_comando.Parameters.Add("@CodEstado", SqlDbType.Int).Value = DBNull.Value;
+
+                      dta_consulta = new DataTable();
+                      dta_consulta.Load(sql_comando.ExecuteReader());
+                      return dta_consulta;
+                  }
+              }
+          }
+          catch (Exception ex)
+          {
+              throw ex;
+          }
+          finally
+          {
+              if (dta_consulta != null) dta_consulta.Dispose();
+          }
+      }
 
       public NotaIngresoSalidaCabCE F_Eliminacion_NotaIngreso(NotaIngresoSalidaCabCE objEntidadBE)
       {
