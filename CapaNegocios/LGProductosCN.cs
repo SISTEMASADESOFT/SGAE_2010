@@ -819,6 +819,22 @@ namespace CapaNegocios
 
         }
 
+        public DataTable F_LGProductos_UltimaCompra_Factura(LGProductosCE objEntidadBE, int maxrows)
+        {
+            try
+            {
+
+                return obj.F_LGProductos_UltimaCompra_Factura(objEntidadBE, maxrows);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
         public DataTable F_LGProductos_Select_Compras(LGProductosCE objEntidadBE)
         {
 

@@ -608,7 +608,8 @@ function F_GrabarDocumento(Flag) {
                 if (str_mensaje_operacion == 'Se Grabo Correctamente') {
                     alertify.log('Se grabo correctamente');
                     F_Reporte(701, $(Contenedor + 'txtDesde').val(),'');
-                }
+                    
+                      $('#MainContent_txtObservacion').val('');                }
                 else {
                     alertify.log(str_mensaje_operacion);
                     return false;

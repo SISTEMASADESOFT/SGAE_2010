@@ -1217,9 +1217,9 @@ function F_AgregarArticulo(ControlID, DirectoBoton) {
 
     $('#MainContent_chkServicios').prop('checked', false);
 
-    //F_VerUltimoPrecio_Buscar($('#MainContent_txtCodigoProductoAgregar').val(), $('#hfCodProductoAgregar').val());
+   F_VerUltimoPrecio_Buscar($('#MainContent_txtCodigoProductoAgregar').val(), $('#hfCodProductoAgregar').val());
      $('#MainContent_txtArticuloAgregar').focus();
- //   F_Consultar_Almacenes_Stocks(ControlID);
+   F_Consultar_Almacenes_Stocks(ControlID);
     if (DirectoBoton === 1)
         F_TablaClick(ControlID);
     return false;
@@ -2198,6 +2198,7 @@ function F_Nuevo(){
        $('#MainContent_txtMonto').val('0.00');
        $('#MainContent_txtSerie').val('');
        $('#MainContent_txtNumero').val('');
+        $('#MainContent_txtObservacion').val('');
        $('#MainContent_txtNroOperacion').val('');
        $('#MainContent_txtVencimiento').val($('#MainContent_txtEmision').val());
        $('#MainContent_txtArticulo').val('');

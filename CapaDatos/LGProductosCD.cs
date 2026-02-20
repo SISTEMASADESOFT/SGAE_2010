@@ -4232,6 +4232,58 @@ namespace CapaDatos
 
         }
 
+        public DataTable F_LGProductos_UltimaCompra_Factura(LGProductosCE objEntidadBE, int maxrow = 5)
+        {
+
+            DataTable dta_consulta = null;
+
+            try
+            {
+
+                using (SqlConnection sql_conexion = new SqlConnection())
+                {
+
+                    sql_conexion.ConnectionString = ConfigurationManager.ConnectionStrings["BDCONEXION"].ConnectionString;
+                    sql_conexion.Open();
+
+                    using (SqlCommand sql_comando = new SqlCommand())
+                    {
+
+                        sql_comando.Connection = sql_conexion;
+                        sql_comando.CommandType = CommandType.StoredProcedure;
+                        sql_comando.CommandText = "pa_DocumentoComprCab_UltimaCompraArticulo";
+
+                        sql_comando.Parameters.Add("@CodCtaCte", SqlDbType.Int).Value = objEntidadBE.CodCtaCte;
+                        sql_comando.Parameters.Add("@CodProducto", SqlDbType.Int).Value = objEntidadBE.CodProducto;
+                        sql_comando.Parameters.Add("@CodAlmacen", SqlDbType.Int).Value = objEntidadBE.CodAlmacen;
+                        sql_comando.Parameters.Add("@CodTipoOperacion", SqlDbType.Int).Value = objEntidadBE.CodTipoOperacion;
+                        sql_comando.Parameters.Add("@nrows", SqlDbType.Int).Value = maxrow;
+
+                        dta_consulta = new DataTable();
+
+                        dta_consulta.Load(sql_comando.ExecuteReader());
+
+                        return dta_consulta;
+
+                    }
+
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+
+            }
+
+            finally { dta_consulta.Dispose(); }
+
+        }
+
+
         public DataTable F_LGProductos_Select_Compras(LGProductosCE objEntidadBE)
         {
 

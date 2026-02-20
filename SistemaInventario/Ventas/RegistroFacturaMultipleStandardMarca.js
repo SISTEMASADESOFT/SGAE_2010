@@ -542,6 +542,9 @@ $(document).ready(function () {
             $('#MainContent_txtArticuloAgregar').focus();
         }
     });
+
+    $('#MainContent_ddlPrecio').change(function () {
+    $('#MainContent_txtPrecioDisplay').val($(this).val());});
     
     $("#MainContent_chkFacturaAntigua").click(function () {
         if ($(this).is(':checked'))
@@ -3604,6 +3607,8 @@ function F_AgregarArticulo(ControlID, DirectoBoton) {
     $('#MainContent_txtCantidad').val(1);
     $('#MainContent_txtPrecioDisplay').val($(hfPrecio1_grilla).val());
     $("#hfMenorPrecioAgregar").val(0);
+     
+    $("#hfMayorPrecioAgregar").val($(hfPrecio1_grilla).val());
 
     $("#MainContent_ddlPrecio").empty();
 
@@ -3846,6 +3851,13 @@ return true;
 //               
 //                         if ($(chkSi).is(':checked')) 
 //                            {
+
+                                var PermisoPrecioMinimo = F_PermisoOpcion_SinAviso(4000, 4000299, '')=0;
+   
+                         if (F_PermisoOpcion_SinAviso(CodigoMenu, 4000208, '') == 0 & parseFloat($('#hfCostoAgregar').val())>parseFloat($('#MainContent_txtPrecioDisplay').val()))
+                             cadena = cadena + "COSTO POR DEBAJO DEL PRECIO <p></p> ";
+
+
                                  $('#MainContent_grvDetalleArticulo .chkDelete :checkbox').each(function () {
                                    chkDel = '#' + this.id;
                                    hfcodarticulodetalle_grilla = chkDel.replace('chkEliminar', 'hfcodarticulo');
@@ -3860,7 +3872,8 @@ return true;
                                   });
 //                            }
 //                    });
-                   }    
+                   }
+                       
                                  
                    if (cadena != "Los sgtes. productos se encuentran agregados : ") 
                    {alertify.log(cadena);

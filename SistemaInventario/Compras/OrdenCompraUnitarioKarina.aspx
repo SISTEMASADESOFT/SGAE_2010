@@ -821,6 +821,7 @@
                                     </tfoot>
                                 </table>
                             </div>
+
                             <div id="div_ultimoprecio">
                                 <div class="ui-jqdialog-content">
                                     <div class="ui-jqdialog-content">
@@ -895,9 +896,13 @@
                                 </div>
                             </div>
                         </td>
+
+
                     </tr>
                 </table>
             </div>
+
+
             <div class="linea-button">
             </div>
             <div class="ui-jqdialog-content">

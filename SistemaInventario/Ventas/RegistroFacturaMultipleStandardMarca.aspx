@@ -3067,6 +3067,7 @@
     <input id="hfCodFacturaEdicion" type="hidden" value="0" />
     <input id="hfCodProductoAgregar" type="hidden" value="0" />
     <input id="hfMenorPrecioAgregar" type="hidden" value="0" />
+    <input id="hfMayorPrecioAgregar" type="hidden" value="0" />
     <input id="hfCostoAgregar" type="hidden" value="0" />
     <input id="hfCodUmAgregar" type="hidden" value="0" />
     <input id="hfDireccionFacturaEditar" type="hidden" value="0" />
