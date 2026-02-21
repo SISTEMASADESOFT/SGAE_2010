@@ -203,11 +203,10 @@ namespace SistemaInventario.Reportes
                 case 10004:
                     P_Reporte_GuiaRemision_Excel();
                     break;
-                case 10005:
-                    P_Reporte_OrdenCompra();
-                    break;
+                //case 10005:
+                //    P_Reporte_OrdenCompra_Excel();
+                //    break;
 
-            
             }
         }
 
@@ -6792,109 +6791,109 @@ namespace SistemaInventario.Reportes
                 Response.End();
             }
         }
-        public void P_Reporte_OrdenCompra_Excel()
-        {
-            // Ruta física de la PLANTILLA
-            string plantillaRel = Request["NombreArchivo"].ToString();
-            string plantillaAbs = Server.MapPath(plantillaRel);
+        //public void P_Reporte_OrdenCompra_Excel()
+        //{
+        //    // Ruta física de la PLANTILLA
+        //    string plantillaRel = Request["NombreArchivo"].ToString();
+        //    string plantillaAbs = Server.MapPath(plantillaRel);
 
-            byte[] templateBytes = File.ReadAllBytes(plantillaAbs);
+        //    byte[] templateBytes = File.ReadAllBytes(plantillaAbs);
 
-            using (var ms = new MemoryStream(templateBytes))
-            using (ExcelPackage pck = new ExcelPackage(ms))
-            {
-                var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
+        //    using (var ms = new MemoryStream(templateBytes))
+        //    using (ExcelPackage pck = new ExcelPackage(ms))
+        //    {
+        //        var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
 
-                // ===== Parámetros (mismos filtros del Buscar) =====
-                string serieDoc = Request["Filtro_SerieDoc"];
-                string numero = Request["Filtro_Numero"];
-                string desde = Request["Filtro_Desde"];
-                string hasta = Request["Filtro_Hasta"];
+        //        // ===== Parámetros (mismos filtros del Buscar) =====
+        //        string serieDoc = Request["Filtro_SerieDoc"];
+        //        string numero = Request["Filtro_Numero"];
+        //        string desde = Request["Filtro_Desde"];
+        //        string hasta = Request["Filtro_Hasta"];
 
-                int codCtaCte;
-                int.TryParse(Request["Filtro_CodCtaCte"], out codCtaCte);
+        //        int codCtaCte;
+        //        int.TryParse(Request["Filtro_CodCtaCte"], out codCtaCte);
 
-                int codEstado;
-                int.TryParse(Request["Filtro_CodEstado"], out codEstado);
+        //        int codEstado;
+        //        int.TryParse(Request["Filtro_CodEstado"], out codEstado);
 
-                int chkNumero = (Request["Filtro_ChkNumero"] ?? "0") == "1" ? 1 : 0;
-                int chkFecha = (Request["Filtro_ChkFecha"] ?? "0") == "1" ? 1 : 0;
-                int chkCliente = (Request["Filtro_ChkCliente"] ?? "0") == "1" ? 1 : 0;
+        //        int chkNumero = (Request["Filtro_ChkNumero"] ?? "0") == "1" ? 1 : 0;
+        //        int chkFecha = (Request["Filtro_ChkFecha"] ?? "0") == "1" ? 1 : 0;
+        //        int chkCliente = (Request["Filtro_ChkCliente"] ?? "0") == "1" ? 1 : 0;
 
-                // ===== Datos =====
-                // OJO: aquí debes llamar a tu consulta REAL de Orden de Compra (la misma que llena grvConsulta)
-                // Te dejo la firma esperada:
-                // DataTable dtTabla = new OrdenCompraCN().F_OrdenCompra_Listar_Excel(...);
+        //        // ===== Datos =====
+        //        // OJO: aquí debes llamar a tu consulta REAL de Orden de Compra (la misma que llena grvConsulta)
+        //        // Te dejo la firma esperada:
+        //        // DataTable dtTabla = new OrdenCompraCN().F_OrdenCompra_Listar_Excel(...);
 
-                DataTable dtTabla = F_OrdenCompra_Listar_Excel(
-                    serieDoc, numero, desde, hasta,
-                    codCtaCte, chkNumero, chkFecha, chkCliente,
-                    codEstado
-                );
+        //        DataTable dtTabla = F_OrdenCompra_Listar_Excel(
+        //            serieDoc, numero, desde, hasta,
+        //            codCtaCte, chkNumero, chkFecha, chkCliente,
+        //            codEstado
+        //        );
+               
+        //        int lastCol = (dtTabla != null) ? dtTabla.Columns.Count : 1;
 
-                int lastCol = (dtTabla != null) ? dtTabla.Columns.Count : 1;
+        //        if (dtTabla == null || dtTabla.Rows.Count == 0)
+        //        {
+        //            Response.Clear();
+        //            Response.ContentType = "text/plain";
+        //            Response.Write("No se encontraron registros para exportar.");
+        //            Response.End();
+        //            return;
+        //        }
 
-                if (dtTabla == null || dtTabla.Rows.Count == 0)
-                {
-                    Response.Clear();
-                    Response.ContentType = "text/plain";
-                    Response.Write("No se encontraron registros para exportar.");
-                    Response.End();
-                    return;
-                }
+        //        // ===== Limpiar cabecera de plantilla (filas 1 a 4) =====
+        //        for (int i = ws.MergedCells.Count - 1; i >= 0; i--)
+        //        {
+        //            string addr = ws.MergedCells[i];
+        //            var rg = ws.Cells[addr];
+        //            if (rg.Start.Row <= 4 && rg.End.Row <= 4)
+        //                rg.Merge = false;
+        //        }
 
-                // ===== Limpiar cabecera de plantilla (filas 1 a 4) =====
-                for (int i = ws.MergedCells.Count - 1; i >= 0; i--)
-                {
-                    string addr = ws.MergedCells[i];
-                    var rg = ws.Cells[addr];
-                    if (rg.Start.Row <= 4 && rg.End.Row <= 4)
-                        rg.Merge = false;
-                }
+        //        int clearToCol = Math.Max(lastCol + 5, 20);
+        //        ws.Cells[1, 1, 4, clearToCol].Clear();
 
-                int clearToCol = Math.Max(lastCol + 5, 20);
-                ws.Cells[1, 1, 4, clearToCol].Clear();
+        //        // ===== Limpiar data vieja (desde fila 5 hacia abajo) =====
+        //        ws.DeleteRow(5, 50000, true);
 
-                // ===== Limpiar data vieja (desde fila 5 hacia abajo) =====
-                ws.DeleteRow(5, 50000, true);
+        //        // ===== Título =====
+        //        ws.Cells[2, 1, 2, lastCol].Merge = true;
+        //        ws.Cells[2, 1].Value = "REPORTE ORDENES DE COMPRA";
+        //        ws.Cells[2, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+        //        ws.Cells[2, 1].Style.Font.Bold = true;
+        //        ws.Cells[2, 1].Style.Font.Size = 14;
 
-                // ===== Título =====
-                ws.Cells[2, 1, 2, lastCol].Merge = true;
-                ws.Cells[2, 1].Value = "REPORTE ORDENES DE COMPRA";
-                ws.Cells[2, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                ws.Cells[2, 1].Style.Font.Bold = true;
-                ws.Cells[2, 1].Style.Font.Size = 14;
+        //        // ===== Cantidad y Fecha =====
+        //        ws.Cells[4, 1].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
+        //        ws.Cells[4, 1].Style.Font.Bold = true;
 
-                // ===== Cantidad y Fecha =====
-                ws.Cells[4, 1].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
-                ws.Cells[4, 1].Style.Font.Bold = true;
+        //        ws.Cells[4, lastCol - 1].Value = "Fecha:";
+        //        ws.Cells[4, lastCol - 1].Style.Font.Bold = true;
 
-                ws.Cells[4, lastCol - 1].Value = "Fecha:";
-                ws.Cells[4, lastCol - 1].Style.Font.Bold = true;
+        //        ws.Cells[4, lastCol].Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+        //        ws.Cells[4, lastCol].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
 
-                ws.Cells[4, lastCol].Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                ws.Cells[4, lastCol].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+        //        // ===== Tabla =====
+        //        ws.Cells["A5"].LoadFromDataTable(dtTabla, true);
+        //        ws.Row(5).Style.Font.Bold = true;
 
-                // ===== Tabla =====
-                ws.Cells["A5"].LoadFromDataTable(dtTabla, true);
-                ws.Row(5).Style.Font.Bold = true;
+        //        // Congelar encabezados
+        //        ws.View.FreezePanes(6, 1);
 
-                // Congelar encabezados
-                ws.View.FreezePanes(6, 1);
+        //        // Ajustar ancho
+        //        ws.Cells[ws.Dimension.Address].AutoFitColumns();
 
-                // Ajustar ancho
-                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+        //        // Descargar sin guardar en disco
+        //        byte[] outBytes = pck.GetAsByteArray();
 
-                // Descargar sin guardar en disco
-                byte[] outBytes = pck.GetAsByteArray();
-
-                Response.Clear();
-                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_OrdenCompra.xlsx");
-                Response.BinaryWrite(outBytes);
-                Response.End();
-            }
-        }
+        //        Response.Clear();
+        //        Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        //        Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_OrdenCompra.xlsx");
+        //        Response.BinaryWrite(outBytes);
+        //        Response.End();
+        //    }
+        //}
 
 
         public void P_ReporteVentasDetallado_Povis()
