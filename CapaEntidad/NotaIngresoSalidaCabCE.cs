@@ -188,4 +188,10 @@ public class NotaIngresoSalidaCabCE
     public int Codtraslado { get; set; }
 
     public List<NotaIngresoSalidaDetCE> TrasladoDet { get; set; }
+
+    public DateTime FechaIni { get; set; }
+
+    public DateTime FechaFin { get; set; }
+
+    public int CodCtaCteConsulta { get; set; }
 }

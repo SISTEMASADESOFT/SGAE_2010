@@ -266,7 +266,7 @@
                                                     </td>
                                                    
                                                      <td style="font-weight: bold;">
-                                                        MAYORISTA
+                                                        PRECIO 3
                                                     </td>
                                                     <td style="padding-left: 32px;">
                                                         <asp:TextBox ID="txtPrecio3" runat="server" Width="80px" Font-Names="Arial" ForeColor="Blue"

@@ -14,7 +14,7 @@ namespace SistemaInventario.Reportes
     public partial class Web_Pagina_ConstruirExcel : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
-        {//franco
+        {
             switch (Convert.ToInt32(Request["CodMenu"]))
             {
                 case 1:
@@ -200,6 +200,13 @@ namespace SistemaInventario.Reportes
                 case 10002:
                     P_Reporte_Producto_Aplicacion_Excel_Cliente_Proveedor_Karina();
                     break;
+                case 10004:
+                    P_Reporte_GuiaRemision_Excel();
+                    break;
+                case 10005:
+                    P_Reporte_OrdenCompra();
+                    break;
+
             
             }
         }
@@ -2804,6 +2811,9 @@ namespace SistemaInventario.Reportes
                 }
             }
         }
+      
+        
+
 
         public void P_ReporteVentasPorPeriodoCompletoAlvarado()
         {
@@ -6496,7 +6506,7 @@ namespace SistemaInventario.Reportes
             }
         }
 
-   //franco
+   //franco  20/02
         public void P_Reporte_Producto_Aplicacion()
         {
             string plantillaRel = Request["NombreArchivo"].ToString();
@@ -6647,6 +6657,240 @@ namespace SistemaInventario.Reportes
                 Response.Clear();
                 Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                 Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_Cliente_Proveedor.xlsx");
+                Response.BinaryWrite(outBytes);
+                Response.End();
+            }
+        }
+        public void P_Reporte_GuiaRemision_Excel()
+        {
+            // Ruta física de la PLANTILLA
+            string plantillaRel = (Request["NombreArchivo"] ?? "").ToString();
+
+            // Agarra solo el nombre del archivo (por si viene con "Reportes/...")
+            string nombreArchivo = System.IO.Path.GetFileName(plantillaRel);
+
+            // Fuerza la carpeta Reportes (donde está tu xlsx)
+            string plantillaAbs = Server.MapPath("~/Reportes/" + nombreArchivo);
+
+
+
+            byte[] templateBytes = System.IO.File.ReadAllBytes(plantillaAbs);
+
+            using (var ms = new MemoryStream(templateBytes))
+            using (ExcelPackage pck = new ExcelPackage(ms))
+            {
+                var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
+
+                // ===== Parámetros (los mismos del Crystal) =====
+                NotaIngresoSalidaCabCE objEntidad = new NotaIngresoSalidaCabCE();
+                objEntidad.CodAlmacen = Convert.ToInt32(Session["CodSede"]);
+                objEntidad.CodUsuario = Convert.ToInt32(Session["CodUsuario"]);
+
+                int codEstado; int.TryParse(Request["CodEstado"], out codEstado);
+                objEntidad.CodEstado = (codEstado <= 0) ? 0 : codEstado;
+
+                int codTipoDoc; int.TryParse(Request["CodTipoDoc"], out codTipoDoc);
+                objEntidad.CodTipoDoc = (codTipoDoc <= 0) ? 0 : codTipoDoc;
+
+                int desde; int hasta;
+                int.TryParse(Request["Desde"], out desde);
+                int.TryParse(Request["Hasta"], out hasta);
+
+                objEntidad.DesdeInt = (desde <= 0) ? 19900101 : desde;
+                objEntidad.HastaInt = (hasta <= 0) ? 19900101 : hasta;
+
+                // ===== Datos =====
+                NotaIngresoSalidaCabCN objOperacion = new NotaIngresoSalidaCabCN();
+                DataTable dtBase = objOperacion.F_TRASLADOSCAB_REPORTE(objEntidad);
+
+                // ===== DataTable FINAL (solo columnas útiles y en orden) =====
+                DataTable dtTabla = new DataTable();
+                dtTabla.Columns.Add("Numero", typeof(string));
+                dtTabla.Columns.Add("Emision", typeof(string));
+                dtTabla.Columns.Add("Destino", typeof(string));
+                dtTabla.Columns.Add("Estado", typeof(string));
+                dtTabla.Columns.Add("Codigo", typeof(string));
+                dtTabla.Columns.Add("Descripcion", typeof(string));
+                dtTabla.Columns.Add("Cant.", typeof(decimal));
+                dtTabla.Columns.Add("Responsable", typeof(string));
+
+                foreach (DataRow r in dtBase.Rows)
+                {
+                    dtTabla.Rows.Add(
+                        dtBase.Columns.Contains("Numero") ? r["Numero"].ToString() : "",
+                        dtBase.Columns.Contains("Emision") ? r["Emision"].ToString() : "",
+                        dtBase.Columns.Contains("Destino") ? r["Destino"].ToString() : "",
+                        dtBase.Columns.Contains("Estado") ? r["Estado"].ToString() : "",
+                        dtBase.Columns.Contains("Numero1") ? r["Numero1"].ToString() : "",          // Codigo
+                        dtBase.Columns.Contains("Observacion") ? r["Observacion"].ToString() : "", // Descripcion
+                        dtBase.Columns.Contains("Numero2") ? Convert.ToDecimal(r["Numero2"]) : 0,  // Cantidad
+                        dtBase.Columns.Contains("Responsable") ? r["Responsable"].ToString() : ""
+                    );
+                }
+
+                int lastCol = dtTabla.Columns.Count;
+
+                // ===== Limpiar cabecera (filas 1 a 4) =====
+                for (int i = ws.MergedCells.Count - 1; i >= 0; i--)
+                {
+                    string addr = ws.MergedCells[i];
+                    var rg = ws.Cells[addr];
+                    if (rg.Start.Row <= 4 && rg.End.Row <= 4)
+                        rg.Merge = false;
+                }
+
+                int clearToCol = Math.Max(lastCol + 5, 30);
+                ws.Cells[1, 1, 4, clearToCol].Clear();
+
+                // ===== Limpiar data vieja =====
+                ws.DeleteRow(5, 50000, true);
+
+                // ===== Título =====
+                ws.Cells[2, 1, 2, lastCol].Merge = true;
+                ws.Cells[2, 1].Value = "REPORTE GUIA DE REMISION";
+                ws.Cells[2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                ws.Cells[2, 1].Style.Font.Bold = true;
+                ws.Cells[2, 1].Style.Font.Size = 14;
+
+                // ===== Subtítulo =====
+                string subtitulo = (objEntidad.DesdeInt != 19900101)
+                    ? ("DESDE " + Request["Desde"] + " HASTA " + Request["Hasta"])
+                    : "SIN RANGO DE FECHAS";
+
+                ws.Cells[3, 1, 3, lastCol].Merge = true;
+                ws.Cells[3, 1].Value = subtitulo;
+                ws.Cells[3, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                ws.Cells[3, 1].Style.Font.Bold = true;
+
+                // ===== Cantidad y Fecha =====
+                ws.Cells[4, 1].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
+                ws.Cells[4, 1].Style.Font.Bold = true;
+
+                ws.Cells[4, lastCol - 1].Value = "Fecha:";
+                ws.Cells[4, lastCol - 1].Style.Font.Bold = true;
+
+                ws.Cells[4, lastCol].Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                ws.Cells[4, lastCol].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+
+                // ===== Tabla =====
+                ws.Cells["A5"].LoadFromDataTable(dtTabla, true);
+                ws.Row(5).Style.Font.Bold = true;
+
+                // Congelar encabezados
+                ws.View.FreezePanes(6, 1);
+
+                // Ajustar ancho
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                // Descargar
+                byte[] outBytes = pck.GetAsByteArray();
+
+                Response.Clear();
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_GuiaRemision.xlsx");
+                Response.BinaryWrite(outBytes);
+                Response.End();
+            }
+        }
+        public void P_Reporte_OrdenCompra_Excel()
+        {
+            // Ruta física de la PLANTILLA
+            string plantillaRel = Request["NombreArchivo"].ToString();
+            string plantillaAbs = Server.MapPath(plantillaRel);
+
+            byte[] templateBytes = File.ReadAllBytes(plantillaAbs);
+
+            using (var ms = new MemoryStream(templateBytes))
+            using (ExcelPackage pck = new ExcelPackage(ms))
+            {
+                var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
+
+                // ===== Parámetros (mismos filtros del Buscar) =====
+                string serieDoc = Request["Filtro_SerieDoc"];
+                string numero = Request["Filtro_Numero"];
+                string desde = Request["Filtro_Desde"];
+                string hasta = Request["Filtro_Hasta"];
+
+                int codCtaCte;
+                int.TryParse(Request["Filtro_CodCtaCte"], out codCtaCte);
+
+                int codEstado;
+                int.TryParse(Request["Filtro_CodEstado"], out codEstado);
+
+                int chkNumero = (Request["Filtro_ChkNumero"] ?? "0") == "1" ? 1 : 0;
+                int chkFecha = (Request["Filtro_ChkFecha"] ?? "0") == "1" ? 1 : 0;
+                int chkCliente = (Request["Filtro_ChkCliente"] ?? "0") == "1" ? 1 : 0;
+
+                // ===== Datos =====
+                // OJO: aquí debes llamar a tu consulta REAL de Orden de Compra (la misma que llena grvConsulta)
+                // Te dejo la firma esperada:
+                // DataTable dtTabla = new OrdenCompraCN().F_OrdenCompra_Listar_Excel(...);
+
+                DataTable dtTabla = F_OrdenCompra_Listar_Excel(
+                    serieDoc, numero, desde, hasta,
+                    codCtaCte, chkNumero, chkFecha, chkCliente,
+                    codEstado
+                );
+
+                int lastCol = (dtTabla != null) ? dtTabla.Columns.Count : 1;
+
+                if (dtTabla == null || dtTabla.Rows.Count == 0)
+                {
+                    Response.Clear();
+                    Response.ContentType = "text/plain";
+                    Response.Write("No se encontraron registros para exportar.");
+                    Response.End();
+                    return;
+                }
+
+                // ===== Limpiar cabecera de plantilla (filas 1 a 4) =====
+                for (int i = ws.MergedCells.Count - 1; i >= 0; i--)
+                {
+                    string addr = ws.MergedCells[i];
+                    var rg = ws.Cells[addr];
+                    if (rg.Start.Row <= 4 && rg.End.Row <= 4)
+                        rg.Merge = false;
+                }
+
+                int clearToCol = Math.Max(lastCol + 5, 20);
+                ws.Cells[1, 1, 4, clearToCol].Clear();
+
+                // ===== Limpiar data vieja (desde fila 5 hacia abajo) =====
+                ws.DeleteRow(5, 50000, true);
+
+                // ===== Título =====
+                ws.Cells[2, 1, 2, lastCol].Merge = true;
+                ws.Cells[2, 1].Value = "REPORTE ORDENES DE COMPRA";
+                ws.Cells[2, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells[2, 1].Style.Font.Bold = true;
+                ws.Cells[2, 1].Style.Font.Size = 14;
+
+                // ===== Cantidad y Fecha =====
+                ws.Cells[4, 1].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
+                ws.Cells[4, 1].Style.Font.Bold = true;
+
+                ws.Cells[4, lastCol - 1].Value = "Fecha:";
+                ws.Cells[4, lastCol - 1].Style.Font.Bold = true;
+
+                ws.Cells[4, lastCol].Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                ws.Cells[4, lastCol].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+
+                // ===== Tabla =====
+                ws.Cells["A5"].LoadFromDataTable(dtTabla, true);
+                ws.Row(5).Style.Font.Bold = true;
+
+                // Congelar encabezados
+                ws.View.FreezePanes(6, 1);
+
+                // Ajustar ancho
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                // Descargar sin guardar en disco
+                byte[] outBytes = pck.GetAsByteArray();
+
+                Response.Clear();
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_OrdenCompra.xlsx");
                 Response.BinaryWrite(outBytes);
                 Response.End();
             }

@@ -107,6 +107,22 @@ $(document).ready(function () {
         minLength: 3
     });
 
+        //franco
+      $('#MainContent_btnExcel').click(function () {
+
+        if (!F_SesionRedireccionar(AppSession)) return false;
+
+
+        try { 
+           F_OrdenCompra_Excel();
+            return false;
+        }
+        catch (e) {
+            toastr.warning("Error Detectado: " + e);
+        }
+    });
+
+
     $('#MainContent_txtDistrito').autocomplete({
         source: function (request, response) {
             $.ajax({
@@ -5273,4 +5289,72 @@ function F_AgregarTemporalServicio() {
         MostrarEspera(false);
         alertify.log("Error Detectado: " + e);
     }
+}
+
+//generar excel franco
+
+
+
+//function F_OrdenCompra_Excel() {
+
+//  var chkNumero  = $('#MainContent_chkNumero').is(':checked') ? '1' : '0';
+//  var chkFecha   = $('#MainContent_chkRango').is(':checked') ? '1' : '0';
+//  var chkCliente = $('#MainContent_chkCliente').is(':checked') ? '1' : '0';
+
+//  var SerieDoc = $("#MainContent_ddlSerieConsulta option:selected").text();
+//  var Numero   = $('#MainContent_txtNumeroConsulta').val();
+//  var Desde    = $('#MainContent_txtDesde').val();
+//  var Hasta    = $('#MainContent_txtHasta').val();
+//  var CodCtaCte= $('#hfCodCtaCteConsulta').val();
+//  var Estado   = $('#MainContent_ddlEstado').val();
+
+//  var rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx?';
+//  rptURL += 'CodMenu=10005&'; // <-- nuevo código, el que uses para este reporte
+//  rptURL += 'Filtro_SerieDoc=' + encodeURIComponent(SerieDoc) + '&';
+//  rptURL += 'Filtro_Numero=' + encodeURIComponent(Numero) + '&';
+//  rptURL += 'Filtro_Desde=' + encodeURIComponent(Desde) + '&';
+//  rptURL += 'Filtro_Hasta=' + encodeURIComponent(Hasta) + '&';
+//  rptURL += 'Filtro_CodCtaCte=' + encodeURIComponent(CodCtaCte) + '&';
+//  rptURL += 'Filtro_ChkNumero=' + encodeURIComponent(chkNumero) + '&';
+//  rptURL += 'Filtro_ChkFecha=' + encodeURIComponent(chkFecha) + '&';
+//  rptURL += 'Filtro_ChkCliente=' + encodeURIComponent(chkCliente) + '&';
+//  rptURL += 'Filtro_CodEstado=' + encodeURIComponent(Estado) + '&';
+
+//  // plantilla
+//  rptURL += 'NombreArchivo=' + encodeURIComponent('Xls_OrdenCompra.xlsx') + '&';
+//  rptURL += 'NombreHoja=' + encodeURIComponent('OrdenCompra');
+
+//  var Params = 'width=' + (screen.width * 0.48) +
+//      ', height=' + (screen.height * 0.40) +
+//      ', top=0, left=0, directories=no, menubar=no, toolbar=no, location=no,' +
+//      ' resizable=yes, scrollbars=yes, titlebar=yes';
+
+//  window.open(rptURL, "PopUpRpt", Params);
+//  return false;
+//}
+function F_OrdenCompra_Excel() {
+
+    var chkNumero  = $('#MainContent_chkNumero').is(':checked') ? '1' : '0';
+    var chkFecha   = $('#MainContent_chkRango').is(':checked') ? '1' : '0';
+    var chkCliente = $('#MainContent_chkCliente').is(':checked') ? '1' : '0';
+
+    var rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx?';
+
+    rptURL += 'CodMenu=10005&';
+    rptURL += 'Filtro_SerieDoc=' + encodeURIComponent($("#MainContent_ddlSerieConsulta option:selected").text()) + '&';
+    rptURL += 'Filtro_Numero=' + encodeURIComponent($('#MainContent_txtNumeroConsulta').val()) + '&';
+    rptURL += 'Filtro_Desde=' + encodeURIComponent($('#MainContent_txtDesde').val()) + '&';
+    rptURL += 'Filtro_Hasta=' + encodeURIComponent($('#MainContent_txtHasta').val()) + '&';
+    rptURL += 'Filtro_CodCtaCte=' + encodeURIComponent($('#hfCodCtaCteConsulta').val()) + '&';
+    rptURL += 'Filtro_ChkNumero=' + chkNumero + '&';
+    rptURL += 'Filtro_ChkFecha=' + chkFecha + '&';
+    rptURL += 'Filtro_ChkCliente=' + chkCliente + '&';
+    rptURL += 'Filtro_CodEstado=' + encodeURIComponent($('#MainContent_ddlEstado').val()) + '&';
+
+    rptURL += 'NombreArchivo=' + encodeURIComponent('Xls_OrdenCompra.xlsx') + '&';
+    rptURL += 'NombreHoja=' + encodeURIComponent('Consulta');
+
+    window.open(rptURL, "_blank");
+
+    return false;
 }

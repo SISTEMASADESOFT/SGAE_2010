@@ -59,6 +59,21 @@ $(document).ready(function () {
         minLength: 3
     });
 
+    $('#MainContent_btnExcel').click(function () {
+
+    if (!F_SesionRedireccionar(AppSession)) return false;
+//    if (F_PermisoOpcion(CodigoMenu, 1000306, '') === "0") return false;
+
+    try {
+        F_Excel_GuiaRemision();
+        return false;
+    }
+    catch (e) {
+        toastr.warning("Error Detectado: " + e);
+        return false;
+    }
+   });
+
     $('#MainContent_txtProveedor').autocomplete({
         source: function (request, response) {
             $.ajax({
@@ -6005,4 +6020,40 @@ function F_ImprimirFactura(Codigo,CodMenu) {
 
         window.open(rptURL, "PopUpRpt", Params);
         return false;
+}
+
+
+
+function F_Excel_GuiaRemision() {
+
+    var rptURL = '';
+    var Params = 'width=' + (screen.width * 0.48) + ', height=' + (screen.height * 0.40) + ', top=0, left=0, directories=no, menubar=no, toolbar=no, location=no, resizable=yes, scrollbars=yes, titlebar=yes';
+
+    
+    var CodMenu = 10004;
+
+    
+    var NombreArchivo = 'Reportes/Xls_GuiaRemision.xlsx';
+
+    var NombreHoja = 'GuiaRemision';
+
+    var Desde = '19900101';
+    var Hasta = '19900101';
+
+    if ($('#MainContent_chkRango').is(':checked')) {
+        Desde = F_Fecha_Formato($("#MainContent_txtDesde").val(), 'ISO');
+        Hasta = F_Fecha_Formato($('#MainContent_txtHasta').val(), 'ISO');
+    }
+
+    rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx?';
+    rptURL += 'CodMenu=' + CodMenu + '&';
+    rptURL += 'Desde=' + Desde + '&';
+    rptURL += 'Hasta=' + Hasta + '&';
+    rptURL += 'CodEstado=' + $('#MainContent_ddlEstado').val() + '&';
+    rptURL += 'CodTipoDoc=' + $('#MainContent_ddlTipoDocConsulta').val() + '&';
+    rptURL += 'NombreArchivo=' + NombreArchivo + '&';
+    rptURL += 'NombreHoja=' + NombreHoja + '&';
+
+    window.open(rptURL, "PopUpXls", Params);
+    return false;
 }
