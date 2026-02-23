@@ -1324,7 +1324,7 @@ namespace SistemaInventario.Maestros
             dta_consultaarticulo.Columns.Add("CostoMercado", typeof(string));
             dta_consultaarticulo.Columns.Add("Anio", typeof(string));
             dta_consultaarticulo.Columns.Add("CodigoInterno", typeof(string));
-            dta_consultaarticulo.Columns.Add("CodigoAlternativo", typeof(string));
+            dta_consultaarticulo.Columns.Add("Codigo2", typeof(string));
             dta_consultaarticulo.Columns.Add("DscProductoIngles", typeof(string));
             dta_consultaarticulo.Columns.Add("PartidaArancelaria", typeof(string));
             dta_consultaarticulo.Columns.Add("StockMaximo", typeof(string));
@@ -1605,6 +1605,7 @@ namespace SistemaInventario.Maestros
             objEntidad.FlagBloqueoExclusivo = Convert.ToInt32(objTablaFiltro["Filtro_FlagBloqueoExclusivo"]);
             objEntidad.CodMonedaCostoInicial = Convert.ToInt32(objTablaFiltro["Filtro_CodMonedaCostoInicial"]);
             objEntidad.Observacion = Convert.ToString(objTablaFiltro["Filtro_Observacion"]);
+            objEntidad.Codigo2 = Convert.ToString(objTablaFiltro["Filtro_Codigo2"]);
 
             objOperacion = new LGProductosCN();
 
@@ -1862,6 +1863,7 @@ namespace SistemaInventario.Maestros
             objEntidad.CodEstado = Convert.ToInt32(objTablaFiltro["Filtro_CodEstado"]);
             objEntidad.CodMonedaCostoInicial = Convert.ToInt32(objTablaFiltro["Filtro_CodMonedaCostoInicial"]);
             objEntidad.Observacion = Convert.ToString(objTablaFiltro["Filtro_Observacion"]);
+            objEntidad.Codigo2 = Convert.ToString(objTablaFiltro["Filtro_Codigo2"]);
 
             objOperacion = new LGProductosCN();
 

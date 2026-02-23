@@ -22,6 +22,15 @@ namespace SistemaInventario.Maestros {
         protected global::System.Web.UI.WebControls.TextBox txtCodigoInterno;
         
         /// <summary>
+        /// Control txtCodigo2.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtCodigo2;
+        
+        /// <summary>
         /// Control ddlFamilia.
         /// </summary>
         /// <remarks>
@@ -209,15 +218,6 @@ namespace SistemaInventario.Maestros {
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtCodigo;
-        
-        /// <summary>
-        /// Control txtCodigo2.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCodigo2;
         
         /// <summary>
         /// Control txtPartidaArancelaria.
@@ -436,6 +436,15 @@ namespace SistemaInventario.Maestros {
         protected global::System.Web.UI.WebControls.TextBox txtCodigoInternoEdicion;
         
         /// <summary>
+        /// Control txtCodigo2Edicion.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtCodigo2Edicion;
+        
+        /// <summary>
         /// Control ddlFamiliaEdicion.
         /// </summary>
         /// <remarks>
@@ -461,15 +470,6 @@ namespace SistemaInventario.Maestros {
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtCodigoEdicion;
-        
-        /// <summary>
-        /// Control txtCodigo2Edicion.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCodigo2Edicion;
         
         /// <summary>
         /// Control txtPartidaArancelariaEdicion.

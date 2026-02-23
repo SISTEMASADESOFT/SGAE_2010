@@ -1334,7 +1334,7 @@ namespace CapaDatos
                                 sql_comando.Parameters.Add("@FlagBloqueoMayorista", SqlDbType.Int).Value = objEntidadBE.FlagBloqueoMayorista;
                                 sql_comando.Parameters.Add("@CodMonedaCostoInicial", SqlDbType.Int).Value = objEntidadBE.CodMonedaCostoInicial;
                                 sql_comando.Parameters.Add("@Observacion", SqlDbType.VarChar, 2000).Value = objEntidadBE.Observacion;
-
+                                sql_comando.Parameters.Add("@Codigo2", SqlDbType.VarChar, 50).Value = objEntidadBE.Codigo2;
                                                                 
                                 SqlParameter MsgError = sql_comando.Parameters.Add("@MsgError", SqlDbType.VarChar, 1000);
                                 MsgError.Direction = ParameterDirection.Output;
@@ -2387,7 +2387,6 @@ namespace CapaDatos
                         {
                             using (SqlCommand sql_comando = new SqlCommand())
                             {
-
                                 sql_comando.Connection = sql_conexion;
                                 sql_comando.CommandType = CommandType.StoredProcedure;
                                 sql_comando.CommandText = "pa_LGProductos_Update";
@@ -2415,6 +2414,8 @@ namespace CapaDatos
                                 sql_comando.Parameters.Add("@FlagBloqueoMayorista", SqlDbType.Int).Value = objEntidadBE.FlagBloqueoMayorista;
                                 sql_comando.Parameters.Add("@CodMonedaCostoInicial", SqlDbType.Int).Value = objEntidadBE.CodMonedaCostoInicial;
                                 sql_comando.Parameters.Add("@Observacion", SqlDbType.VarChar,2000).Value = objEntidadBE.Observacion;
+                                sql_comando.Parameters.Add("@Codigo2", SqlDbType.VarChar, 50).Value = objEntidadBE.Codigo2;
+
                                 SqlParameter MsgError = sql_comando.Parameters.Add("@MsgError", SqlDbType.VarChar, 1000);
                                 MsgError.Direction = ParameterDirection.Output;
                                 SqlParameter CodAlterno = sql_comando.Parameters.Add("@CodAlternoOut", SqlDbType.VarChar, 15);

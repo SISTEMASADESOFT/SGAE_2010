@@ -1045,7 +1045,8 @@ function F_GrabarDocumento() {
             Filtro_FlagBloqueoMayorista: FlagBloqueoMayorista,
             Filtro_FlagBloqueoExclusivo: FlagBloqueoExclusivo,
             Filtro_CodMonedaCostoInicial: $(Contenedor + 'ddlMonedaCostoInicial').val(),
-            Filtro_Observacion: $(Contenedor + 'txtObservacion').val()
+            Filtro_Observacion: $(Contenedor + 'txtObservacion').val(),
+            Filtro_Codigo2: $(Contenedor + 'txtCodigo2').val().toUpperCase().trim()
         };
 
         var arg = Sys.Serialization.JavaScriptSerializer.serialize(objParams);
@@ -1327,7 +1328,7 @@ function F_EditarRegistro(Fila) {
         var hfCostoInicial = '#' + imgID.replace('imgEditarRegistro', 'hfCostoInicial');
         var hfCodMonedaInicial = '#' + imgID.replace('imgEditarRegistro', 'hfCodMonedaInicial');
         var hfObservacion = '#' + imgID.replace('imgEditarRegistro', 'hfObservacion');
-
+        var lblCodigo2 = '#' + imgID.replace('imgEditarRegistro', 'lblCodigo2');
         var Cuerpo = '#MainContent_';
 
         $(Cuerpo + 'txtCodigoInternoEdicion').val($(hfCodigoInterno).val());
@@ -1349,6 +1350,7 @@ function F_EditarRegistro(Fila) {
         $(Cuerpo + 'txtCostoEdicion').val(parseFloat($(hfCostoInicial).val()).toFixed(2));
         $(Cuerpo + 'ddlMonedaCostoInicialEdicion').val($(hfCodMonedaInicial).val());
         $(Cuerpo + 'txtObservacionEdicion').val($(hfObservacion).val());
+        $(Cuerpo + 'txtCodigo2').val($(lblCodigo2).text());
 
         if ($(hfFlagBloqueoMayorista).val() == 0)
             $(Cuerpo + 'chkBloqueoMayoristaEdicion').prop('checked', false);
@@ -1391,7 +1393,7 @@ function F_EditarRegistro(Fila) {
                     title: "Edicion de Productos",
                     title_html: true,
                     height: 300,
-                    width: 740,
+                    width: 800,
                     autoOpen: false
                 });
                 $('#divEdicionRegistro').dialog('open');
@@ -1639,7 +1641,8 @@ function F_EdicionRegistro() {
             Filtro_FlagBloqueoMayorista: FlagBloqueoMayorista,
             Filtro_FlagBloqueoExclusivo: FlagBloqueoExclusivo,
             Filtro_CodMonedaCostoInicial: $(Contenedor + 'ddlMonedaCostoInicialEdicion').val(),
-            Filtro_Observacion: $(Contenedor + 'txtObservacionEdicion').val()
+            Filtro_Observacion: $(Contenedor + 'txtObservacionEdicion').val(),
+            Filtro_Codigo2: $(Contenedor + 'txtCodigo2Edicion').val().toUpperCase().trim()
         };
 
         var arg = Sys.Serialization.JavaScriptSerializer.serialize(objParams);

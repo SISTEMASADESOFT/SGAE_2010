@@ -38,7 +38,7 @@
                 <tr>
                     <td valign="top">
                         <%--DATOS DEL PRODUCTO--%>
-                        <div class="ui-jqgrid ui-widget ui-widget-content ui-corner-all" style="width: 750px;">
+                        <div class="ui-jqgrid ui-widget ui-widget-content ui-corner-all" style="width: 760px;">
                             <div class="ui-jqgrid-titlebar ui-widget-header ui-corner-top ui-helper-clearfix">
                                 REGISTRO DE PRODUCTOS
                             </div>
@@ -52,24 +52,31 @@
                                             <table cellpadding="0" cellspacing="0">
                                                 <tr>
                                                     <td>
-                                                        <asp:TextBox ID="txtCodigoInterno" runat="server" Width="244px" Font-Names="Arial"
+                                                        <asp:TextBox ID="txtCodigoInterno" runat="server" Width="150px" Font-Names="Arial"
                                                             ForeColor="Blue" Font-Bold="True"></asp:TextBox>
+                                                    </td>
+                                                             <td style="font-weight: bold">
+                                                        Codigo 2
+                                                    </td>
+                                                    <td>
+                                                        <asp:TextBox ID="txtCodigo2" runat="server" Width="150px" Font-Names="Arial" ForeColor="Blue"
+                                                            Font-Bold="True"></asp:TextBox>
                                                     </td>
                                                     <td style="font-weight: bold">
                                                         Familia
                                                     </td>
-                                                    <td style="padding-left: 11px;">
+                                                    <td>
                                                         <div id="div_Familia">
                                                             <asp:DropDownList ID="ddlFamilia" runat="server" Font-Names="Arial" ForeColor="Blue"
-                                                                Font-Bold="True" Width="225">
+                                                                Font-Bold="True" Width="170">
                                                             </asp:DropDownList>
                                                         </div>
                                                     </td>
-                                                    <td style="padding-left: 1px; font-weight: bold">
+                                                    <td style="font-weight: bold">
                                                         t.c.
                                                     </td>
                                                     <td>
-                                                        <asp:TextBox ID="txtTC" runat="server" Width="31px" Font-Names="Arial" ForeColor="Blue"
+                                                        <asp:TextBox ID="txtTC" runat="server" Width="25px" Font-Names="Arial" ForeColor="Blue"
                                                             Font-Bold="True" ReadOnly="True" Text="3.097"></asp:TextBox>
                                                     </td>
                                                 </tr>
@@ -86,7 +93,7 @@
                                             <table cellpadding="0" cellspacing="0">
                                                 <tr>
                                         <td>
-                                            <asp:TextBox ID="txtDescripcion" runat="server" Width="416px" Font-Names="Arial"
+                                            <asp:TextBox ID="txtDescripcion" runat="server" Width="465px" Font-Names="Arial"
                                                 ForeColor="Blue" Font-Bold="True"></asp:TextBox>
                                         </td>
                                          <td style="font-weight: bold;">
@@ -113,7 +120,7 @@
                                             <table cellpadding="0" cellspacing="0">
                                                 <tr>
                                                     <td>
-                                                      <asp:TextBox ID="txtObservacion" runat="server" Width="585px" Font-Names="Arial" ForeColor="Blue"
+                                                      <asp:TextBox ID="txtObservacion" runat="server" Width="635px" Font-Names="Arial" ForeColor="Blue"
                                                             Font-Bold="True" TextMode="MultiLine" Height="40"></asp:TextBox>
                                                      
                                                     </td>
@@ -128,7 +135,7 @@
                                                         UBICACION
                                                     </td>
                                         <td style="padding-left: 4px;">
-                                                        <asp:TextBox ID="txtUbicacion" runat="server" Width="585px" Font-Names="Arial" ForeColor="Blue"
+                                                        <asp:TextBox ID="txtUbicacion" runat="server" Width="635px" Font-Names="Arial" ForeColor="Blue"
                                                             Font-Bold="True"></asp:TextBox>
                                                     </td>
                                     </tr>
@@ -288,13 +295,7 @@
                                                         <asp:TextBox ID="txtCodigo" runat="server" Width="244px" Font-Names="Arial" ForeColor="Blue"
                                                             Font-Bold="True"></asp:TextBox>
                                                     </td>
-                                                    <td style="font-weight: bold">
-                                                        Codigo 2
-                                                    </td>
-                                                    <td>
-                                                        <asp:TextBox ID="txtCodigo2" runat="server" Width="263px" Font-Names="Arial" ForeColor="Blue"
-                                                            Font-Bold="True"></asp:TextBox>
-                                                    </td>
+                                           
                                                     <td style="font-weight: bold; display: none">
                                                         Partida Arancelaria
                                                     </td>
@@ -485,6 +486,13 @@
                                             <ItemStyle HorizontalAlign="Left" />
                                             <ItemTemplate>
                                                 <asp:Label runat="server" ID="lblCodigoInterno" Text='<%# Bind("CodigoInterno") %>'></asp:Label>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+
+                                          <asp:TemplateField HeaderText="Codigo 2" HeaderStyle-HorizontalAlign="Center">
+                                            <ItemStyle HorizontalAlign="Left" />
+                                            <ItemTemplate>
+                                                <asp:Label runat="server" ID="lblCodigo2" Text='<%# Bind("Codigo2") %>'></asp:Label>
                                             </ItemTemplate>
                                         </asp:TemplateField>
 
@@ -746,13 +754,13 @@
         <table cellpadding="0" cellspacing="0">
             <tr>
                 <td>
-                    <div class="ui-jqgrid ui-widget ui-widget-content ui-corner-all" style="width: 700px;">
+                    <div class="ui-jqgrid ui-widget ui-widget-content ui-corner-all" style="width: 770px;">
                         
                         <div class="ui-jqgrid-titlebar ui-widget-header ui-corner-top ui-helper-clearfix"
-                            style="width: 700px">
+                            style="width: 770px">
                             DATOS PRODUCTO
                         </div>
-                        <div class="ui-jqdialog-content" style="width: 700px">
+                        <div class="ui-jqdialog-content" style="width: 770px">
                             <table cellpadding="0" cellspacing="0" class="form-inputs">
                                 <tr>
                                     <td style="font-weight: bold; width: 120">
@@ -762,24 +770,31 @@
                                         <table cellpadding="0" cellspacing="0">
                                             <tr>
                                                 <td>
-                                                    <asp:TextBox ID="txtCodigoInternoEdicion" runat="server" Width="244px" Font-Names="Arial"
+                                                    <asp:TextBox ID="txtCodigoInternoEdicion" runat="server" Width="150px" Font-Names="Arial"
+                                                        ForeColor="Blue" Font-Bold="True"></asp:TextBox>
+                                                </td>
+                                                      <td style="font-weight: bold">
+                                                    Codigo 2
+                                                </td>
+                                                <td>
+                                                    <asp:TextBox ID="txtCodigo2Edicion" runat="server" Width="150px" Font-Names="Arial"
                                                         ForeColor="Blue" Font-Bold="True"></asp:TextBox>
                                                 </td>
                                                 <td style="font-weight: bold">
                                                     Familia
                                                 </td>
-                                                <td style="padding-left: 11px;">
+                                                <td>
                                                     <div id="div_FamiliaEdicion">
                                                         <asp:DropDownList ID="ddlFamiliaEdicion" runat="server" Font-Names="Arial" ForeColor="Blue"
-                                                            Font-Bold="True" Width="207">
+                                                            Font-Bold="True" Width="160">
                                                         </asp:DropDownList>
                                                     </div>
                                                 </td>
-                                                <td style="padding-left: 1px; font-weight: bold">
+                                                <td style="font-weight: bold">
                                                     t.c.
                                                 </td>
                                                 <td>
-                                                    <asp:TextBox ID="txtTCEdicion" runat="server" Width="45px" Font-Names="Arial" ForeColor="Blue"
+                                                    <asp:TextBox ID="txtTCEdicion" runat="server" Width="25px" Font-Names="Arial" ForeColor="Blue"
                                                         Font-Bold="True" ReadOnly="True" Text="3.097"></asp:TextBox>
                                                 </td>
                                             </tr>
@@ -797,13 +812,7 @@
                                                     <asp:TextBox ID="txtCodigoEdicion" runat="server" Width="258px" Font-Names="Arial"
                                                         ForeColor="Blue" Font-Bold="True"></asp:TextBox>
                                                 </td>
-                                                <td style="font-weight: bold">
-                                                    Codigo 2
-                                                </td>
-                                                <td>
-                                                    <asp:TextBox ID="txtCodigo2Edicion" runat="server" Width="263px" Font-Names="Arial"
-                                                        ForeColor="Blue" Font-Bold="True"></asp:TextBox>
-                                                </td>
+                                          
                                                 <td style="font-weight: bold; display: none">
                                                     Partida Arancelaria
                                                 </td>
@@ -823,7 +832,7 @@
                                     <table  cellpadding="0" cellspacing="0">
                                     <tr>
                                      <td>
-                                        <asp:TextBox ID="txtDescripcionEdicion" runat="server" Width="415px" Font-Names="Arial"
+                                        <asp:TextBox ID="txtDescripcionEdicion" runat="server" Width="458px" Font-Names="Arial"
                                             ForeColor="Blue" Font-Bold="True"></asp:TextBox>
                                     </td>
                                       <td style="font-weight: bold;">
@@ -850,7 +859,7 @@
                                         <table cellpadding="0" cellspacing="0">
                                             <tr>
                                                 <td>
-                                                    <asp:TextBox ID="txtObservacionEdicion" runat="server" Width="582px" Font-Names="Arial"
+                                                    <asp:TextBox ID="txtObservacionEdicion" runat="server" Width="625px" Font-Names="Arial"
                                                         ForeColor="Blue" Font-Bold="True" TextMode="MultiLine" Height="40"></asp:TextBox>
                                                 </td>
                                            
@@ -864,7 +873,7 @@
                                         ubicacion
                                     </td>
                                 <td style="padding-left: 4px;">
-                                                    <asp:TextBox ID="txtUbicacionEdicion" runat="server" Width="582px" Font-Names="Arial"
+                                                    <asp:TextBox ID="txtUbicacionEdicion" runat="server" Width="625px" Font-Names="Arial"
                                                         ForeColor="Blue" Font-Bold="True"></asp:TextBox>
                                                 </td>
                                 </tr>
