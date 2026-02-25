@@ -1092,7 +1092,7 @@
                                     <asp:DropDownList ID="ddlEstadoEdicion" runat="server" Font-Names="Arial" ForeColor="Blue"
                                         Font-Bold="True" Width="100">
                                         <asp:ListItem Value="1">Activo</asp:ListItem>
-                                        <asp:ListItem Value="2">Inativo</asp:ListItem>
+                                        <asp:ListItem Value="2">Inactivo</asp:ListItem>
                                     </asp:DropDownList>
                                 </div>
                                         </td>

@@ -69,7 +69,7 @@ $(document).ready(function () {
             });
         },
         select: function (e, i) {
-            $('#hfCodCtaCteConsulta').val(i.item.val);    
+            $('#hfCodCtaCteConsulta').val(i.item.val);
         },
         minLength: 3
     });
@@ -143,33 +143,33 @@ $(document).ready(function () {
 
     F_Controles_Inicializar();
 
-//    $("#divSeleccionarEmpresa").dialog({
-//        resizable: false,
-//        modal: true,
-//        title: "VALIDAR USUARIO AUXILIAR",
-//        title_html: true,
-//        height: 130,
-//        width: 250,
-//        autoOpen: false,
-//        closeOnEscape: false,
-//        open: function (event, ui) {
-//            $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-//        }
-//    });
+    //    $("#divSeleccionarEmpresa").dialog({
+    //        resizable: false,
+    //        modal: true,
+    //        title: "VALIDAR USUARIO AUXILIAR",
+    //        title_html: true,
+    //        height: 130,
+    //        width: 250,
+    //        autoOpen: false,
+    //        closeOnEscape: false,
+    //        open: function (event, ui) {
+    //            $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+    //        }
+    //    });
 
-//    $("#divEliminar").dialog({
-//        resizable: false,
-//        modal: true,
-//        title: "VALIDAR USUARIO AUXILIAR",
-//        title_html: true,
-//        height: 130,
-//        width: 250,
-//        autoOpen: false,
-//        closeOnEscape: false,
-//        open: function (event, ui) {
-//            $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-//        }
-//    });
+    //    $("#divEliminar").dialog({
+    //        resizable: false,
+    //        modal: true,
+    //        title: "VALIDAR USUARIO AUXILIAR",
+    //        title_html: true,
+    //        height: 130,
+    //        width: 250,
+    //        autoOpen: false,
+    //        closeOnEscape: false,
+    //        open: function (event, ui) {
+    //            $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+    //        }
+    //    });
 
     $("#divPreliminar").dialog({
         resizable: false,
@@ -282,8 +282,8 @@ $(document).ready(function () {
         if (!confirm("ESTA SEGURO DE ELIMINAR LA IMPORTACION : " + $(lblnumero_grilla).text() + "\nDEL PROVEEDOR : " + $(lblcliente_grilla).text()))
             return false;
 
-//        $('#divPreliminar').dialog('close');
-//        $('#divEliminar').dialog('open');
+        //        $('#divPreliminar').dialog('close');
+        //        $('#divEliminar').dialog('open');
         try {
             //            var Cadena = "Ingrese los sgtes. campos:";
 
@@ -298,84 +298,85 @@ $(document).ready(function () {
             //                return false;
             //            }
 
-//            var objParams = {
-//                Filtro_Usuario: $('#MainContent_txtUsuarioEliminar').val(),
-//                Filtro_NvClave: $('#MainContent_txtContraseñaEliminar').val(),
-//                Filtro_Pagina: 'CuentasPorCobrar/RegistroCobranzas.aspx'
-//            }
-//            var arg = Sys.Serialization.JavaScriptSerializer.serialize(objParams);
+            //            var objParams = {
+            //                Filtro_Usuario: $('#MainContent_txtUsuarioEliminar').val(),
+            //                Filtro_NvClave: $('#MainContent_txtContraseñaEliminar').val(),
+            //                Filtro_Pagina: 'CuentasPorCobrar/RegistroCobranzas.aspx'
+            //            }
+            //            var arg = Sys.Serialization.JavaScriptSerializer.serialize(objParams);
 
             MostrarEspera(true);
-//            F_ValidarUsuario_NET(arg, function (result) {
-//                MostrarEspera(false);
+            //            F_ValidarUsuario_NET(arg, function (result) {
+            //                MostrarEspera(false);
 
+            var str_resultado_operacion = "";
+            var str_mensaje_operacion = "";
+
+            //                str_resultado_operacion = result.split('~')[0];
+            //                str_mensaje_operacion = result.split('~')[1];
+            //                $('#hfCodUsuarioAuxiliar').val(result.split('~')[2]);
+            //                if (str_mensaje_operacion == "USUARIO AUXILIAR AUTORIZADO") {
+            //                    $('#divEliminar').dialog('close');
+            var chkNumero = '0';
+            var chkFecha = '0';
+            var chkCliente = '0';
+
+            if ($('#MainContent_chkNumero').is(':checked'))
+                chkNumero = '1';
+
+            if ($('#MainContent_chkRango').is(':checked'))
+                chkFecha = '1';
+
+            if ($('#MainContent_chkCliente').is(':checked'))
+                chkCliente = '1';
+
+            var lblCodImportacion = $('#hfCodImportacion').val();
+
+            var objParams = {
+                Filtro_Codigo: lblCodImportacion,
+                Filtro_Observacion: $("#MainContent_txtObservacionEli").text(),
+                Filtro_Serie: $("#MainContent_ddlSerie option:selected").text(),
+                Filtro_Numero: $('#MainContent_txtNumeroConsulta').val(),
+                Filtro_Desde: $('#MainContent_txtDesde').val(),
+                Filtro_Hasta: $('#MainContent_txtHasta').val(),
+                Filtro_CodCtaCte: $('#hfCodCtaCteConsulta').val(),
+                Filtro_CodTipoDocSust: 1,
+                Filtro_ChkNumero: chkNumero,
+                Filtro_ChkFecha: chkFecha,
+                Filtro_ChkCliente: chkCliente,
+                Filtro_CodClasificacion: 2
+            };
+
+            var arg = Sys.Serialization.JavaScriptSerializer.serialize(objParams);
+            MostrarEspera(true);
+            F_AnularRegistro_Net(arg, function (result) {
                 var str_resultado_operacion = "";
                 var str_mensaje_operacion = "";
 
-//                str_resultado_operacion = result.split('~')[0];
-//                str_mensaje_operacion = result.split('~')[1];
-//                $('#hfCodUsuarioAuxiliar').val(result.split('~')[2]);
-//                if (str_mensaje_operacion == "USUARIO AUXILIAR AUTORIZADO") {
-//                    $('#divEliminar').dialog('close');
-                    var chkNumero = '0';
-                    var chkFecha = '0';
-                    var chkCliente = '0';
+                str_resultado_operacion = result.split('~')[0];
+                str_mensaje_operacion = result.split('~')[1];
 
-                    if ($('#MainContent_chkNumero').is(':checked'))
-                        chkNumero = '1';
+                MostrarEspera(false);
 
-                    if ($('#MainContent_chkRango').is(':checked'))
-                        chkFecha = '1';
-
-                    if ($('#MainContent_chkCliente').is(':checked'))
-                        chkCliente = '1';
-
-
-                    var objParams = {
-                        Filtro_Codigo: lblCodImportacion,
-                        Filtro_Observacion: $("#MainContent_txtObservacionEli").text(),
-                        Filtro_Serie: $("#MainContent_ddlSerie option:selected").text(),
-                        Filtro_Numero: $('#MainContent_txtNumeroConsulta').val(),
-                        Filtro_Desde: $('#MainContent_txtDesde').val(),
-                        Filtro_Hasta: $('#MainContent_txtHasta').val(),
-                        Filtro_CodCtaCte: $('#hfCodCtaCteConsulta').val(),
-                        Filtro_CodTipoDocSust: 1,
-                        Filtro_ChkNumero: chkNumero,
-                        Filtro_ChkFecha: chkFecha,
-                        Filtro_ChkCliente: chkCliente,
-                        Filtro_CodClasificacion: 2
-                    };
-
-                    var arg = Sys.Serialization.JavaScriptSerializer.serialize(objParams);
-                    MostrarEspera(true);
-                    F_AnularRegistro_Net(arg, function (result) {
-                        var str_resultado_operacion = "";
-                        var str_mensaje_operacion = "";
-
-                        str_resultado_operacion = result.split('~')[0];
-                        str_mensaje_operacion = result.split('~')[1];
-
-                        MostrarEspera(false);
-
-                        if (str_mensaje_operacion == "SE ANULO CORRECTAMENTE") {
-                            F_Update_Division_HTML('div_consulta', result.split('~')[2]);
-                            alertify.log(result.split('~')[1]);
-                            $('#divPreliminar').dialog('close');
-                            F_Buscar();
-                        }
-                        else {
-                            alertify.log(result.split('~')[1]);
-                        }
-
-                        return false;
-                    });
-
-//                }
-                //alertify.log(str_mensaje_operacion);
+                if (str_mensaje_operacion == "SE ANULO CORRECTAMENTE") {
+                    F_Update_Division_HTML('div_consulta', result.split('~')[2]);
+                    alertify.log(result.split('~')[1]);
+                    $('#divPreliminar').dialog('close');
+                    F_Buscar();
+                }
+                else {
+                    alertify.log(result.split('~')[1]);
+                }
 
                 return false;
+            });
 
-//            });
+            //                }
+            //alertify.log(str_mensaje_operacion);
+
+            return false;
+
+            //            });
         }
         catch (e) {
             MostrarEspera(false);
@@ -389,18 +390,18 @@ $(document).ready(function () {
         //        if (!F_SesionRedireccionar(AppSession)) return false;
 
         try {
-//            var Cadena = "Ingrese los sgtes. campos:";
+            //            var Cadena = "Ingrese los sgtes. campos:";
 
-//            if ($('#MainContent_txtUsuario').val() == "")
-//                Cadena = Cadena + '<p></p>' + "usuario";
+            //            if ($('#MainContent_txtUsuario').val() == "")
+            //                Cadena = Cadena + '<p></p>' + "usuario";
 
-//            if ($('#MainContent_txtContraseña').val() == "")
-//                Cadena = Cadena + '<p></p>' + "Clave";
+            //            if ($('#MainContent_txtContraseña').val() == "")
+            //                Cadena = Cadena + '<p></p>' + "Clave";
 
-//            if (Cadena != "Ingrese los sgtes. campos:") {
-//                alertify.log(Cadena);
-//                return false;
-//            }
+            //            if (Cadena != "Ingrese los sgtes. campos:") {
+            //                alertify.log(Cadena);
+            //                return false;
+            //            }
 
             var objParams = {
                 Filtro_Usuario: $('#MainContent_txtUsuarioEliminar').val(),
@@ -542,7 +543,7 @@ $(document).ready(function () {
                         if (data.MsgError === "") {
 
                         } else {
-                            alertify.log(data.MsgError);                            
+                            alertify.log(data.MsgError);
                         }
                     }
                     catch (x) { }
@@ -618,7 +619,7 @@ $(document).ready(function () {
     $('#MainContent_txtUsuarioEliminar').css('background', '#FFFFE0');
 
     $('#MainContent_txtContraseñaEliminar').css('background', '#FFFFE0');
-    
+
     $('#divTabs').tabs();
 });
 
@@ -941,7 +942,9 @@ function F_AnularRegistro(Fila) {
             return false;
         }
 
+
         lblCodImportacion = $(lblCodImportacion).val();
+        $('#hfCodImportacion').val(lblCodImportacion)
         $('#MainContent_txtProveedorEli').val($(lblcliente_grilla).text());
         $('#MainContent_txtNumEli').val($(lblnumero_grilla).text());
 

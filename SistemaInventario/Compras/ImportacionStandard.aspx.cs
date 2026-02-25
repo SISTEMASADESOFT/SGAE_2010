@@ -1165,6 +1165,51 @@ namespace SistemaInventario.Compras
             CodMovimiento = objEntidad.CodDocumentoVenta;
         }
 
+        protected void btnFormato_Click(object sender, EventArgs e)
+        {
+            DocumentoVentaCabCE objEntidad = null;
+            DocumentoVentaCabCN objOperacion = null;
+            objOperacion = new DocumentoVentaCabCN();
+            objEntidad = new DocumentoVentaCabCE();
+            DataTable dtTabla = null;
+
+            dtTabla = objOperacion.F_ObtenerFormatoImportacion();
+
+            using (ExcelPackage pck = new ExcelPackage())
+            {
+                ExcelWorksheet ws = pck.Workbook.Worksheets.Add("IMPORTACION");
+
+                if (dtTabla.Rows.Count == 0)
+                {
+                    DataRow dr = dtTabla.NewRow();
+                    for (int i = 0; i < dtTabla.Columns.Count; i++)
+                    {
+                        dr[i] = "";
+                    }
+                    dtTabla.Rows.Add(dr);
+                }
+                else
+                {
+                    ws.Cells["A1"].LoadFromDataTable(dtTabla, true);
+                    ws.Cells[ws.Dimension.Address].AutoFitColumns();
+                }
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    pck.SaveAs(ms);
+                    ms.Position = 0;
+
+                    Response.Clear();
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("Content-Disposition", "attachment; filename=ImportacionFormato.xlsx");
+                    Response.BinaryWrite(ms.ToArray());
+                    Response.Flush();
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                }
+            }
+        }
+
+
         protected void ExportarExcelNuevo(long IdExcel, int CodMovimiento)
         {
             DocumentoVentaCabCN objOperacion = null;

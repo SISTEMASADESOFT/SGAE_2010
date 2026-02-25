@@ -299,8 +299,10 @@
 
                     </div>
                     <div class="linea-button">
+
                         <asp:Button ID="btnNuevo" runat="server" Text="Nuevo" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
                             Font-Names="Arial" Font-Bold="True" Width="120" OnClick="btnNuevo_Click" />
+
                         <asp:Button ID="btnImport" runat="server" Text="Cargar" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
                             Font-Names="Arial" Font-Bold="True" Width="120" OnClick="btnImport_Click" />
 

@@ -1848,7 +1848,7 @@ function F_AbrirDropzone_JS() {
     str_id = $('#hid_id_mantenimiento').val(); if (str_id == '') str_id = '0';
 
     myDropzone = new Dropzone("#mydropzone", {
-        url: "ProductosNarvaez.aspx",
+        url: "ProductosStandard.aspx",
         method: "POST",
         paramName: "file1",
         parallelUploads: 10,
@@ -1966,7 +1966,7 @@ function F_AbrirDropzone_Edit_JS(str_id, nameimg) {
     //    }
 
     mydropzone_Edit = new Dropzone("#mydropzone_Edit", {
-        url: "ProductosNarvaez.aspx",
+        url: "ProductosStandard.aspx",
         method: "POST",
         paramName: "file1",
         parallelUploads: 10,
@@ -2091,7 +2091,7 @@ function F_Consultar_Imagen(str_tipoConsulta) {
     $.ajax({
         type: 'POST',
         contentType: "application/json; charset= utf-8",
-        url: "ProductosNarvaez.aspx/F_UltimaImagenTMP_JS",
+        url: "ProductosStandard.aspx/F_UltimaImagenTMP_JS",
         dataType: "json",
         success: function (dataObject, textStatus) {
             if (textStatus == "success") {
@@ -2117,7 +2117,7 @@ function F_Consultar_Imagen_Editar(str_tipoConsulta) {
     $.ajax({
         type: 'POST',
         contentType: "application/json; charset= utf-8",
-        url: "ProductosNarvaez.aspx/F_UltimaImagenTMP_JS",
+        url: "ProductosStandard.aspx/F_UltimaImagenTMP_JS",
         dataType: "json",
         success: function (dataObject, textStatus) {
             if (textStatus == "success") {
@@ -2143,7 +2143,7 @@ function F_Consultar_Imagen_Editar2(str_tipoConsulta) {
     $.ajax({
         type: 'POST',
         contentType: "application/json; charset= utf-8",
-        url: "ProductosNarvaez.aspx/F_UltimaImagenTMP_JS",
+        url: "ProductosStandard.aspx/F_UltimaImagenTMP_JS",
         dataType: "json",
         success: function (dataObject, textStatus) {
             if (textStatus == "success") {
@@ -2180,7 +2180,7 @@ function F_Eliminar_Temporal_Imagen(id_Imagen, str_tipoConsulta) {
         async: true,
         type: 'POST',
         contentType: "application/json; charset=utf-8",
-        url: 'ProductosNarvaez.aspx/F_Eliminar_Temporal_Imagen',
+        url: 'ProductosStandard.aspx/F_Eliminar_Temporal_Imagen',
         dataType: "json",
         data: JSON.stringify({ 'objEntidad': param }),
         success: function (dataObject, textStatus) {
@@ -2216,7 +2216,7 @@ function F_Eliminar_Imagen(id_Imagen, str_tipoConsulta) {
         async: true,
         type: 'POST',
         contentType: "application/json; charset=utf-8",
-        url: 'ProductosNarvaez.aspx/F_Eliminar_Imagen',
+        url: 'ProductosStandard.aspx/F_Eliminar_Imagen',
         dataType: "json",
         data: JSON.stringify({ 'objEntidad': param }),
         success: function (dataObject, textStatus) {
@@ -2310,7 +2310,7 @@ function F_ConsultarArticulosRelacionados(CodAlterno) {
         async: true,
         type: 'POST',
         contentType: "application/json; charset=utf-8",
-        url: 'ProductosNarvaez.aspx/F_LGProductosRelaciones_Listar_NET',
+        url: 'ProductosStandard.aspx/F_LGProductosRelaciones_Listar_NET',
         dataType: "json",
         data: JSON.stringify({ 'CodAlterno': objParams }),
         success: function (dbObject) {
