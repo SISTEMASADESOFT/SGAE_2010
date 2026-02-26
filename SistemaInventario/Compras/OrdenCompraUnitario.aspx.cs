@@ -43,7 +43,8 @@ namespace SistemaInventario.Compras
             CallbackManager.Register(F_Ventas_NET);
             CallbackManager.Register(F_Series_Documentos_NET);
             CallbackManager.Register(F_StockAlmacenes_NET);
-            CallbackManager.Register(F_Auditoria_NET);                                      
+            CallbackManager.Register(F_Auditoria_NET);
+            CallbackManager.Register(F_VerUltimoPrecio_NET);                        
         }
 
         private string _menu = "3000"; private string _opcion = "1";
@@ -339,6 +340,72 @@ namespace SistemaInventario.Compras
 
             return str_resultado;
         }
+
+
+        public String F_VerUltimoPrecio_NET(String arg)
+        {
+            String str_resultado = "";
+            String str_grvConsultaUltimosPrecios = "";
+            String str_mensaje_operacion = "";
+            int int_resultado_operacion = 0;
+            String MsgError = "";
+            Hashtable obj_parametros = null;
+
+            try
+            {
+                obj_parametros = SistemaInventario.Clases.JsonSerializer.FromJson<Hashtable>(arg);
+                //Agutierrez: se hizo la modificacion, debido a que ahora se mostrar un top y no el ultimo precio
+                //P_VerUltimoPrecio(obj_parametros, ref Precio, ref Moneda, ref Fecha, ref Cantidad);
+                P_VerUltimoPrecio(obj_parametros, ref grvConsultaUltimosPrecios);
+                if (grvConsultaUltimosPrecios.Rows.Count == 0)
+                {
+                    P_Inicializar_GrillaVacia_UltimoPrecio();
+                }
+                else
+                {
+                    int_resultado_operacion = 1;
+                    str_mensaje_operacion = MsgError;
+                }
+            }
+            catch (Exception ex)
+            {
+                str_mensaje_operacion = "Ha ocurrido el siguiente error: " + ex.Message;
+                int_resultado_operacion = 0;
+            }
+
+            str_grvConsultaUltimosPrecios = Mod_Utilitario.F_GetHtmlForControl(grvConsultaUltimosPrecios);
+
+            str_resultado =
+                Convert.ToString(int_resultado_operacion) + "~" +
+                str_mensaje_operacion + "~" +
+                str_grvConsultaUltimosPrecios;
+
+            return str_resultado;
+        }
+
+
+        public void P_VerUltimoPrecio(Hashtable objTablaFiltro, ref GridView GrillaUltimosPrecios)
+        {
+
+            LGProductosCE objEntidad = null;
+            LGProductosCN objOperacion = null;
+
+            objEntidad = new LGProductosCE();
+            objEntidad.CodProducto = Convert.ToInt32(objTablaFiltro["Filtro_CodProducto"]);
+            objEntidad.CodTipoOperacion = Convert.ToInt32(objTablaFiltro["Filtro_CodTipoOperacion"]);
+            objEntidad.CodCtaCte = Convert.ToInt32(objTablaFiltro["Filtro_CodCtaCte"]);
+            objEntidad.CodAlmacen = Convert.ToInt32(Session["CodSede"]);
+            int MaxRows = Convert.ToInt32(objTablaFiltro["Filtro_Top"]); //Agutierrez
+
+            objOperacion = new LGProductosCN();
+
+            DataTable dta_consulta = null;
+
+            dta_consulta = objOperacion.F_LGProductos_UltimaCompra(objEntidad, MaxRows);
+            GrillaUltimosPrecios.DataSource = dta_consulta;
+            GrillaUltimosPrecios.DataBind();
+        }
+
 
         public String F_EliminarTemporal_NET(String arg)
         {
@@ -1518,6 +1585,34 @@ namespace SistemaInventario.Compras
 
             grvConsulta.DataSource = dta_consulta;
             grvConsulta.DataBind();
+        }
+
+
+        public void P_Inicializar_GrillaVacia_UltimoPrecio()
+        {
+            DataTable dta_consultadetallenv = null;
+            DataRow dtr_filadetalle = null;
+
+            dta_consultadetallenv = new DataTable();
+
+            dta_consultadetallenv.Columns.Add("Precio", typeof(string));
+            dta_consultadetallenv.Columns.Add("Moneda", typeof(string));
+            dta_consultadetallenv.Columns.Add("Cantidad", typeof(string));
+            dta_consultadetallenv.Columns.Add("Fecha", typeof(string));
+            dta_consultadetallenv.Columns.Add("Factura", typeof(string));
+
+            dtr_filadetalle = dta_consultadetallenv.NewRow();
+
+            dtr_filadetalle[0] = "";
+            dtr_filadetalle[1] = "";
+            dtr_filadetalle[2] = "";
+            dtr_filadetalle[3] = "";
+            dtr_filadetalle[4] = "";
+
+            dta_consultadetallenv.Rows.Add(dtr_filadetalle);
+
+            grvConsultaUltimosPrecios.DataSource = dta_consultadetallenv;
+            grvConsultaUltimosPrecios.DataBind();
         }
 
         public void P_Inicializar_GrillaVacia_DetalleOC()

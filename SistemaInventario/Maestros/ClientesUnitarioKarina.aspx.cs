@@ -1144,7 +1144,10 @@ namespace SistemaInventario.Maestros
 
             dta_consulta = objOperacionConceptosDet.F_TCConceptos_Select(objEntidadConceptosDet);
 
-            ddl_combofamilia.DataSource = dta_consulta;
+            DataView dv = new DataView(dta_consulta);
+            dv.RowFilter = "DscAbvConcepto <> 'CONDUCTOR'";//aqui quito el coductor para el formulario de clientes 
+
+            ddl_combofamilia.DataSource = dv;  //dta_consulta;
             ddl_combofamilia.DataTextField = "DscAbvConcepto";
             ddl_combofamilia.DataValueField = "CodConcepto";
             ddl_combofamilia.DataBind();

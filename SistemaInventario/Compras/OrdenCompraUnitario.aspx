@@ -778,6 +778,42 @@
                             </div>
                         </td>
                         <td valign="top">
+
+                               <div id="divStocksEmpresas" style="width: 230px; padding-top: 5px">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 190px">
+                                                Almacen
+                                            </th>
+                                            <th style="width: 25px">
+                                                Stock
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                KARINA Principal
+                                            </td>
+                                            <td align="right">
+                                                10
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                TOTAL
+                                            </td>
+                                            <td align="right">
+                                                10
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
                           
                             <div id="div_ultimoprecio">
                                 <div class="ui-jqdialog-content">
@@ -804,7 +840,7 @@
                                                 border="0" CellPadding="0" CellSpacing="1" CssClass="GridView" GridLines="None"
                                                 Width="227px">
                                                 <Columns>
-                                                    <asp:BoundField DataField="Precio" HeaderText="Precio Unitario">
+                                       <%--             <asp:BoundField DataField="Precio" HeaderText="Precio Unitario">
                                                         <HeaderStyle HorizontalAlign="Center" />
                                                         <ItemStyle HorizontalAlign="Right" />
                                                     </asp:BoundField>
@@ -823,7 +859,30 @@
                                                     <asp:BoundField DataField="Factura" HeaderText="Factura" Visible="false">
                                                         <HeaderStyle HorizontalAlign="Center" />
                                                         <ItemStyle HorizontalAlign="Right" />
+                                                    </asp:BoundField>--%>
+
+                                                         <asp:BoundField DataField="Fecha" HeaderText="Fecha">
+                                                        <HeaderStyle HorizontalAlign="Center" />
+                                                        <ItemStyle HorizontalAlign="Right" />
                                                     </asp:BoundField>
+                                                    <asp:BoundField DataField="Factura" HeaderText="OC">
+                                                        <HeaderStyle HorizontalAlign="Center" />
+                                                        <ItemStyle HorizontalAlign="Left" />
+                                                    </asp:BoundField>
+                                                    <asp:BoundField DataField="Cantidad" HeaderText="Cant">
+                                                        <HeaderStyle HorizontalAlign="Center" />
+                                                        <ItemStyle HorizontalAlign="Right" />
+                                                    </asp:BoundField>
+                                                    <asp:BoundField DataField="Precio" HeaderText="Prec">
+                                                        <HeaderStyle HorizontalAlign="Center" />
+                                                        <ItemStyle HorizontalAlign="Right" />
+                                                    </asp:BoundField>
+                                                    <asp:BoundField DataField="Moneda" HeaderText="Mon">
+                                                        <HeaderStyle HorizontalAlign="Center" />
+                                                        <ItemStyle HorizontalAlign="Left" />
+                                                    </asp:BoundField>
+
+
                                                 </Columns>
                                             </asp:GridView>
                                         </div>

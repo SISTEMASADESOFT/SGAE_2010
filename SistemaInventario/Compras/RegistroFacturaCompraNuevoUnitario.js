@@ -1268,9 +1268,9 @@ function F_AgregarArticulo(ControlID, DirectoBoton) {
 
     $('#MainContent_chkServicios').prop('checked', false);
 
-    //F_VerUltimoPrecio_Buscar($('#MainContent_txtCodigoProductoAgregar').val(), $('#hfCodProductoAgregar').val());
+    F_VerUltimoPrecio_Buscar($('#MainContent_txtCodigoProductoAgregar').val(), $('#hfCodProductoAgregar').val());
      $('#MainContent_txtArticuloAgregar').focus();
- //   F_Consultar_Almacenes_Stocks(ControlID);
+    F_Consultar_Almacenes_Stocks(ControlID);
     if (DirectoBoton === 1)
         F_TablaClick(ControlID);
     return false;

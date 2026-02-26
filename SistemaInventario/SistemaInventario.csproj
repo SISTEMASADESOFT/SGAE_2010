@@ -512,16 +512,6 @@
     <Content Include="Inventario\NotaIngresoSalidaReeim.js" />
     <Content Include="Inventario\RegistroAjusteExcelRoman.aspx" />
     <Content Include="Inventario\RegistroAjusteExcelRoman.js" />
-    <Content Include="lib\BouncyCastle.Crypto.dll" />
-    <Content Include="lib\CapaDatos.dll" />
-    <Content Include="lib\CapaEntidad.dll" />
-    <Content Include="lib\CapaNegocios.dll" />
-    <Content Include="lib\EasyCallback.dll" />
-    <Content Include="lib\EPPlus.dll" />
-    <Content Include="lib\itextsharp.dll" />
-    <Content Include="lib\KeepAutomation.Barcode.Crystal.dll" />
-    <Content Include="lib\Newtonsoft.Json.dll" />
-    <Content Include="lib\SistemaInventario.dll" />
     <Content Include="Maestros\CargaMasivaPrecios_Alvarado.aspx" />
     <Content Include="Maestros\CargaMasivaPrecios_Alvarado.js" />
     <Content Include="Compras\NotaCreditoChiquito.aspx" />
