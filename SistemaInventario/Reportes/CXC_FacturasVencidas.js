@@ -364,6 +364,7 @@ function F_Excel() {
     }
     
     var cantidad = ddlCliente.selected().length;
+    var Columna = 12; 
 
     var arrClientes = new Array();
     $.each(ddlCliente.selected(), function (index, item) {
@@ -385,6 +386,7 @@ function F_Excel() {
     rptURL = rptURL + 'CodVendedor='    + $("#MainContent_ddlVendedor").val() + '&';
     rptURL = rptURL + 'NombreHoja='    + NombreHoja + '&';
     rptURL = rptURL + 'NombreArchivo='  + NombreArchivo + '&';
+    rptURL = rptURL + 'Columna='        + Columna + '&';
     window.open(rptURL, "PopUpRpt", Params);
 
     return false;

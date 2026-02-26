@@ -3188,6 +3188,7 @@ namespace SistemaInventario.Ventas
             objEntidad.ObservacionPermiso = Convert.ToString(objTablaFiltro["Filtro_ObservacionPermiso"]);         
             objEntidad.ComisionTarjeta = Convert.ToDecimal(objTablaFiltro["Filtro_ComisionTarjeta"]);
             objEntidad.CodDocumentoVentaDireccion = Convert.ToInt32(objTablaFiltro["Filtro_CodDocumentoVentaDireccion"]);
+            objEntidad.Observacion = Convert.ToString(objTablaFiltro["Filtro_Observacion"]);
             
             // FIN DATOS DE LA FACTURA
             

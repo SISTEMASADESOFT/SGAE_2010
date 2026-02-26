@@ -135,14 +135,14 @@
                 <div style="background:#fff; border:1px solid #ddd; border-radius:6px; padding:15px;">
                     
                          <h3 class="titulo-grafico">Ventas Generales</h3>
-                    <canvas id="canvasVentas" style="max-height:300px;"></canvas>
+                    <canvas id="canvasVentas" style="max-height:380px;"></canvas>
                 </div>
 
                 <div style="background:#fff; border:1px solid #ddd; border-radius:6px; padding:15px;">
                    
                     
                      <h3 class="titulo-grafico">Ventas por Vendedor</h3>
-                    <canvas id="canvasVentasHorizontal" style="max-height:300px;"></canvas>
+                    <canvas id="canvasVentasHorizontal" style="max-height:380px;"></canvas>
                 </div>
 
 
@@ -163,7 +163,7 @@
                 <div style="background:#fff; border:1px solid #ddd; border-radius:6px; padding:15px; grid-column:span 2;">
                     
                      <h3 class="titulo-grafico">Productos Mas Vendidos</h3>
-                    <canvas id="canvasVentasProducto" style="max-height:500px;"></canvas>
+                    <canvas id="canvasVentasProducto" style="max-height:400px;"></canvas>
                 </div>
 
 

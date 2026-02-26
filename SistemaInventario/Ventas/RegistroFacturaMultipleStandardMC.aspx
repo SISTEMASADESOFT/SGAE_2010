@@ -1400,6 +1400,10 @@
                                                      <asp:HiddenField ID="hfexclusivo" runat="server" Value='<%# Bind("Exclusivo") %>' />
                                                 </ItemTemplate>
                                             </asp:TemplateField>
+                                                    <asp:BoundField DataField="Codigo2" HeaderText="Codigo 2">
+                                                <HeaderStyle HorizontalAlign="Center" />
+                                                <ItemStyle HorizontalAlign="Left" />
+                                            </asp:BoundField>
                                             <asp:TemplateField HeaderText="Descripcion" HeaderStyle-HorizontalAlign="Center">
                                                 <ItemStyle HorizontalAlign="Left" />
                                                 <ItemTemplate>

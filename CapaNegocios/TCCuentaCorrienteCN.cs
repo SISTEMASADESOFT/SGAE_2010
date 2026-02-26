@@ -246,7 +246,6 @@ namespace CapaNegocios
             }
 
         }
-
         public DataTable F_TCCuentaCorriente_Listar(TCCuentaCorrienteCE objEntidadBE)
         {
 
@@ -254,6 +253,23 @@ namespace CapaNegocios
             {
 
                 return obj.F_TCCuentaCorriente_Listar(objEntidadBE);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
+        public DataTable F_TCCuentaCorriente_Listar_excel(TCCuentaCorrienteCE objEntidadBE)
+        {
+
+            try
+            {
+
+                return obj.F_TCCuentaCorriente_Listar_excel(objEntidadBE);
 
             }
             catch (Exception ex)

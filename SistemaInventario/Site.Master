@@ -113,8 +113,8 @@
 							
 			</asp:MenuItem>
                         <asp:MenuItem Text="Ventas" Value="4000">
-                            <asp:MenuItem Value="1" Text="Cotizaciones" NavigateUrl="~/Ventas/RegistroCotizacionesStandardMarca.aspx"></asp:MenuItem>
-                            <asp:MenuItem Value="2" Text="Factura" NavigateUrl="~/Ventas/RegistroFacturaMultipleStandardMarca.aspx"></asp:MenuItem>
+                            <asp:MenuItem Value="1" Text="Cotizaciones" NavigateUrl="~/Ventas/RegistroCotizacionesMC.aspx"></asp:MenuItem>
+                            <asp:MenuItem Value="2" Text="Factura" NavigateUrl="~/Ventas/RegistroFacturaMultipleStandardMC.aspx"></asp:MenuItem>
                             <asp:MenuItem Value="6" Text="Nota de Credito" NavigateUrl="~/Ventas/RegistroNotaCredito.aspx"></asp:MenuItem>
 			                <asp:MenuItem Value="10" Text="Descarga XML Sunat" NavigateUrl="~/Ventas/DescargasSunatXML.aspx"></asp:MenuItem>
 							<asp:MenuItem Value="20" Text="Facturas Antiguas" NavigateUrl="~/Ventas/RegistroFacturaMultipleTek_BDantigua.aspx"></asp:MenuItem>

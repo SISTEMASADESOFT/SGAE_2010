@@ -6024,17 +6024,33 @@ function F_ImprimirFactura(Codigo,CodMenu) {
 
 
 
+
+//function F_Excel_GuiaRemision() {
+//    var url = '';
+//    var Desde = '19900101';
+//    var Hasta = '19900101';
+
+//    if ($('#MainContent_chkRango').is(':checked')) {
+//        Desde = F_Fecha_Formato($("#MainContent_txtDesde").val(), 'ISO');
+//        Hasta = F_Fecha_Formato($('#MainContent_txtHasta').val(), 'ISO');
+//    }
+
+//    url = '../Reportes/Web_Pagina_ConstruirExcel.aspx?';
+//    url += 'CodMenu=10003&';
+//    url += 'Desde=' + Desde + '&';
+//    url += 'Hasta=' + Hasta + '&';
+//    url += 'CodEstado=' + $('#MainContent_ddlEstado').val() + '&';
+//    url += 'CodTipoDoc=' + $('#MainContent_ddlTipoDocConsulta').val();
+
+//    // descarga directa
+//    window.location.href = url;
+//    return false;
+//}
+
 function F_Excel_GuiaRemision() {
 
-    var rptURL = '';
-    var Params = 'width=' + (screen.width * 0.48) + ', height=' + (screen.height * 0.40) + ', top=0, left=0, directories=no, menubar=no, toolbar=no, location=no, resizable=yes, scrollbars=yes, titlebar=yes';
-
-    
-    var CodMenu = 10004;
-
-    
-    var NombreArchivo = 'Reportes/Xls_GuiaRemision.xlsx';
-
+    var CodMenu = 10003;
+    var NombreArchivo = 'Xls_GuiaRemision.xlsx';
     var NombreHoja = 'GuiaRemision';
 
     var Desde = '19900101';
@@ -6045,15 +6061,20 @@ function F_Excel_GuiaRemision() {
         Hasta = F_Fecha_Formato($('#MainContent_txtHasta').val(), 'ISO');
     }
 
-    rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx?';
+    var rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx?';
     rptURL += 'CodMenu=' + CodMenu + '&';
-    rptURL += 'Desde=' + Desde + '&';
-    rptURL += 'Hasta=' + Hasta + '&';
-    rptURL += 'CodEstado=' + $('#MainContent_ddlEstado').val() + '&';
-    rptURL += 'CodTipoDoc=' + $('#MainContent_ddlTipoDocConsulta').val() + '&';
-    rptURL += 'NombreArchivo=' + NombreArchivo + '&';
-    rptURL += 'NombreHoja=' + NombreHoja + '&';
+    rptURL += 'Desde=' + encodeURIComponent(Desde) + '&';
+    rptURL += 'Hasta=' + encodeURIComponent(Hasta) + '&';
+    rptURL += 'CodEstado=' + encodeURIComponent($('#MainContent_ddlEstado').val()) + '&';
+    rptURL += 'CodTipoDoc=' + encodeURIComponent($('#MainContent_ddlTipoDocConsulta').val()) + '&';
+    rptURL += 'NombreArchivo=' + encodeURIComponent(NombreArchivo) + '&';
+    rptURL += 'NombreHoja=' + encodeURIComponent(NombreHoja);
 
-    window.open(rptURL, "PopUpXls", Params);
+    var Params = 'width=' + (screen.width * 0.48) +
+        ', height=' + (screen.height * 0.40) +
+        ', top=0, left=0, directories=no, menubar=no, toolbar=no, location=no,' +
+        ' resizable=yes, scrollbars=yes, titlebar=yes';
+
+    window.open(rptURL, "PopUpRpt", Params);
     return false;
 }
