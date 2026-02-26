@@ -989,61 +989,19 @@ namespace SistemaInventario.Compras
                             for (int row = worksheet.Dimension.Start.Row + 1; row <= worksheet.Dimension.End.Row; row++)
                             {
                                 // Obtener los valores de las celdas
-                                string CODIGOUNICO = worksheet.Cells[row, 1].Text;
-                                //string FAMILIA = worksheet.Cells[row, 2].Text;
-                                //string CODIGO = worksheet.Cells[row, 3].Text;
-                                //string CODIGO2 = worksheet.Cells[row, 4].Text;
-                                //string MEDIDA = worksheet.Cells[row, 5].Text;
-                                //string POSICION = worksheet.Cells[row, 6].Text;
-                                //string MODELO = worksheet.Cells[row, 7].Text;
-                                //string ANIO = worksheet.Cells[row, 8].Text;
-                                //string DESCRIPCION = worksheet.Cells[row, 9].Text;
-                                //string MARCA = worksheet.Cells[row, 10].Text;
-                                //string UBICACION = worksheet.Cells[row, 11].Text;
-                                //string CODMONEDAPRECIO = worksheet.Cells[row, 12].Text;
-
-                                //string CODMONEDACOSTO = worksheet.Cells[row, 16].Text;
-
-                                //string OBSERVACION = worksheet.Cells[row, 7].Text;
+                                string CODIGOUNICO = worksheet.Cells[row, 1].Text;                  
                                 string CANTIDAD = worksheet.Cells[row, 2].Text;
                                 string COSTO = worksheet.Cells[row, 3].Text;
                                 string PRECIO = worksheet.Cells[row, 4].Text;
                                 string PRECIO2 = worksheet.Cells[row, 5].Text;
                                 string PRECIO3 = worksheet.Cells[row, 6].Text;
 
-
-                                //                                // Realizar la inserción en la base de datos
-                                //                    string insertQuery = @"INSERT ImportacionExcel(CODIGOUNICO, IDFAMILIA, CODIGO, CODIGO2, MEDIDA, POSICION, MODELO, AÑO, DESCRIPCION,
-                                //                            MARCA, UBICACION, CODMONEDAPRECIO, P1, P2, P3,
-                                //                            CODMONEDACOSTO, COSTO,OBSERVACION, CANTIDAD, IDPruebasExcelCab,NombreArchivo)
-                                //  
-                                //                           VALUES (@CODIGOUNICO, @IDFAMILIA,@CODIGO,@CODIGO2,@MEDIDA,@POSICION,@MODELO,@AÑO,@DESCRIPCION,
-                                //                            @MARCA,@UBICACION,@CODMONEDAPRECIO,@P1,@P2,@P3,
-                                //                            @CODMONEDACOSTO,@COSTO,@OBSERVACION,@CANTIDAD,@IDPruebasExcelCab,@NombreArchivo)";
-
-                                string insertQuery = @"INSERT ImportacionExcel(CODIGOUNICO, 
-                                           CANTIDAD,COSTO,P1,P2,P3,IDPruebasExcelCab,NombreArchivo)
-  
-                           VALUES (@CODIGOUNICO,@CANTIDAD,@COSTO,@P1,@P2,@P3,@IDPruebasExcelCab,@NombreArchivo)";
+                                string insertQuery = @"INSERT ImportacionExcel(CODIGOUNICO,CANTIDAD,COSTO,P1,P2,P3,IDPruebasExcelCab,NombreArchivo) 
+                                                       VALUES (@CODIGOUNICO,@CANTIDAD,@COSTO,@P1,@P2,@P3,@IDPruebasExcelCab,@NombreArchivo)";
 
                                 using (SqlCommand cmd = new SqlCommand(insertQuery, connection))
                                 {
-                                    cmd.Parameters.AddWithValue("@CODIGOUNICO", CODIGOUNICO);
-                                    //cmd.Parameters.AddWithValue("@IDFAMILIA", FAMILIA);
-                                    //cmd.Parameters.AddWithValue("@CODIGO", CODIGO);
-                                    //cmd.Parameters.AddWithValue("@CODIGO2", CODIGO2);
-                                    //cmd.Parameters.AddWithValue("@MEDIDA", MEDIDA);
-                                    //cmd.Parameters.AddWithValue("@POSICION", POSICION);
-                                    //cmd.Parameters.AddWithValue("@MODELO", MODELO);
-                                    //cmd.Parameters.AddWithValue("@AÑO", ANIO);
-                                    //cmd.Parameters.AddWithValue("@DESCRIPCION", DESCRIPCION);
-                                    //cmd.Parameters.AddWithValue("@MARCA", MARCA);
-                                    //cmd.Parameters.AddWithValue("@UBICACION", UBICACION);
-                                    //cmd.Parameters.AddWithValue("@CODMONEDAPRECIO", CODMONEDAPRECIO);
-
-                                    //cmd.Parameters.AddWithValue("@CODMONEDACOSTO", CODMONEDACOSTO);
-
-                                    //cmd.Parameters.AddWithValue("@OBSERVACION", OBSERVACION);
+                                    cmd.Parameters.AddWithValue("@CODIGOUNICO", CODIGOUNICO);                             
                                     cmd.Parameters.AddWithValue("@CANTIDAD", CANTIDAD);
                                     cmd.Parameters.AddWithValue("@COSTO", COSTO);
                                     cmd.Parameters.AddWithValue("@P1", PRECIO);

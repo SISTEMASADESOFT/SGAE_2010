@@ -4873,7 +4873,8 @@ function F_GrabarDocumento(){
             Filtro_ComisionTarjeta: ComisionTarjetaFinal,            
             Filtro_CodDocumentoVentaDireccion: $('#MainContent_ddldireccionNueva').val(), 
             Filtro_NotaPedido: $('#hfNotaPedido').val(),
-            
+            Filtro_Celular: '',
+            Filtro_Observacion: $('#MainContent_txtObservacion').val(),
             // FIN DATOS DE LA FACTURA   
 
             // INICIO DATOS DE LA GUIA 
