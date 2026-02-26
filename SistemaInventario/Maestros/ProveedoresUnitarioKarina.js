@@ -3566,16 +3566,20 @@ function F_Correo(Fila) {
 //franco 
 function F_Producto_Aplicacion_Excel() {
 
+    
+    var CodMenu = 10002;
+    var NombreArchivo = 'Xls_Cliente_Proveedores.xlsx';
+    var NombreHoja = 'Hoja';
    
-    var CodCtaCte = $('#hfCodCtaCte').val();
-    var NroRuc = $('#hfNroRuc').val();
+    var razonSocial = $('#hfNroRuc').val();  
+    var CodTipoCtaCte =2;
 
     var rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx?';
-    rptURL += 'CodMenu=10002&';
-    rptURL += 'NroRuc=' + encodeURIComponent(NroRuc) + '&';
-    rptURL += 'CodCtaCte=' + encodeURIComponent(CodCtaCte) + '&';
-    rptURL += 'NombreArchivo=' + encodeURIComponent('Xls_Productos_Aplicacion.xlsx') + '&';
-    rptURL += 'NombreHoja=' + encodeURIComponent('Aplicacion');
+    rptURL += 'CodMenu=' + CodMenu + '&';
+    rptURL += 'RazonSocial=' + encodeURIComponent(razonSocial) + '&';
+    rptURL += 'CodTipoCtaCte=' + encodeURIComponent(CodTipoCtaCte) + '&';
+    rptURL += 'NombreArchivo=' + encodeURIComponent(NombreArchivo) + '&';
+    rptURL += 'NombreHoja=' + encodeURIComponent(NombreHoja);
 
     var Params = 'width=' + (screen.width * 0.48) +
         ', height=' + (screen.height * 0.40) +
@@ -3585,6 +3589,4 @@ function F_Producto_Aplicacion_Excel() {
     window.open(rptURL, "PopUpRpt", Params);
     return false;
 }
-
-
   
