@@ -2,7 +2,7 @@
 
 var CodigoMenu = 3000;
 var CodigoInterno = 6;
-
+//cambio
 $(document).ready(function () {
 
     $('#MainContent_txtProveedor').autocomplete({
