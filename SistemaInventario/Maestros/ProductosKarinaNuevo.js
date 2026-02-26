@@ -3384,28 +3384,26 @@ function F_Inicializar_Tabla_Almacenes_Stocks() {
 
 //generar excel franco
 function F_Producto_Aplicacion_Excel() {
-    var Cuerpo = '#MainContent_';
-    var rptURL = '';
-    var Params = 'width=' + (screen.width * 0.48) + ', height=' + (screen.height * 0.40) + ', top=0, left=0, directories=no, menubar=no, toolbar=no, location=no, resizable=yes, scrollbars=yes, titlebar=yes';
-    var TipoArchivo = 'application/pdf';
-    var CodMenu = 10001;
-    var NombreArchivo = 'Xls_Productos_Aplicacion.xlsx';
-    var NombreHoja = 'Aplicacion';
+  var Params =
+    'width=' + (screen.width * 0.48) +
+    ', height=' + (screen.height * 0.40) +
+    ', top=0, left=0, directories=no, menubar=no, toolbar=no, location=no, resizable=yes, scrollbars=yes, titlebar=yes';
 
-    if ($.trim($('#MainContent_txtDescripcionConsulta').val())=='')
-        $('#hfCodMarca').val('0');
+  var CodMenu = 10001;
+  var NombreArchivo = 'Xls_Productos_Aplicacion.xlsx';
+  var NombreHoja = 'Aplicacion';
 
-    rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx';
-      rptURL = rptURL + '?';
-    rptURL = rptURL + 'CodMenu=' + CodMenu + '&';
-    rptURL = rptURL + 'IDFamilia=' + $('#MainContent_ddlFamiliaConsulta').val() + '&';
-    rptURL = rptURL + 'DscProducto=' + $('#MainContent_txtDescripcionConsulta').val() + '&';
-    rptURL = rptURL + 'CodMarca=' + $('#hfCodMarca').val() + '&';
-    rptURL = rptURL + 'CodEstado=' + $('#MainContent_ddlFiltroCodEstado').val()  + '&';
-    rptURL = rptURL + 'NombreArchivo=' + NombreArchivo + '&';
-    rptURL = rptURL + 'NombreHoja=' + NombreHoja + '&';
+  // Ruta base SIEMPRE (para que no se "corte")
+  var rptURL = '../Reportes/Web_Pagina_ConstruirExcel.aspx?';
 
-    window.open(rptURL, "PopUpRpt", Params);
+  rptURL += 'CodMenu=' + encodeURIComponent(CodMenu) + '&';
+  rptURL += 'DscProducto=' + encodeURIComponent($('#MainContent_txtDescripcionConsulta').val()) + '&';
+  rptURL += 'IDFamilia=' + encodeURIComponent($('#MainContent_ddlFamiliaConsulta').val()) + '&';
+  rptURL += 'CodEstado=' + encodeURIComponent($('#MainContent_ddlFiltroCodEstado').val()) + '&';
+  rptURL += 'FlagProductosConStock=' + ($('#MainContent_chkProductosConStock').is(':checked') ? 1 : 0) + '&';
+  rptURL += 'NombreArchivo=' + encodeURIComponent(NombreArchivo) + '&';
+  rptURL += 'NombreHoja=' + encodeURIComponent(NombreHoja);
 
-    return false;
+  window.open(rptURL, "PopUpRpt", Params);
+  return false;
 }

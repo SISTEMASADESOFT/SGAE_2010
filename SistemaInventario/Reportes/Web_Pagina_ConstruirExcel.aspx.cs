@@ -200,13 +200,10 @@ namespace SistemaInventario.Reportes
                 case 10002:
                     P_Reporte_Producto_Aplicacion_Excel_Cliente_Proveedor_Karina();
                     break;
-                case 10004:
-                    P_Reporte_GuiaRemision_Excel();
+                case 10003:
+                    Exportar_TrasladosCab_Reporte_Excel();
                     break;
-                //case 10005:
-                //    P_Reporte_OrdenCompra_Excel();
-                //    break;
-
+            
             }
         }
 
@@ -2810,9 +2807,6 @@ namespace SistemaInventario.Reportes
                 }
             }
         }
-      
-        
-
 
         public void P_ReporteVentasPorPeriodoCompletoAlvarado()
         {
@@ -6505,395 +6499,421 @@ namespace SistemaInventario.Reportes
             }
         }
 
-   //franco  20/02
+       ////////////////////////////////////////////franco 23/02/2026
+
         public void P_Reporte_Producto_Aplicacion()
         {
-            string plantillaRel = Request["NombreArchivo"].ToString();
-            string plantillaAbs = Server.MapPath(plantillaRel);
+            // 1) Params
+            string nombreArchivoRel = Convert.ToString(Request.QueryString["NombreArchivo"]);
+            string nombreHoja = Convert.ToString(Request.QueryString["NombreHoja"]);
 
-          
-            byte[] templateBytes = System.IO.File.ReadAllBytes(plantillaAbs);
+            // 2) Data
+            LGProductosCE objEntidad = new LGProductosCE();
+            objEntidad.DscProducto = Convert.ToString(Request.QueryString["DscProducto"]);
+            objEntidad.IdFamilia = Convert.ToInt32(Request.QueryString["IDFamilia"]);
+            objEntidad.CodAlmacen = Convert.ToInt32(Session["CodSede"]);
+            objEntidad.CodUsuario = Convert.ToInt32(Session["CodUsuario"]);
+            objEntidad.CodEstado = Convert.ToInt32(Request.QueryString["CodEstado"]);
+            objEntidad.FlagProductosConStock = Convert.ToInt32(Request.QueryString["FlagProductosConStock"]);
 
-            using (var ms = new MemoryStream(templateBytes))
-            using (ExcelPackage pck = new ExcelPackage(ms))
+            LGProductosCN objOperacion = new LGProductosCN();
+            DataTable dtTabla = objOperacion.F_LGProductos_Listar_Alvarado(objEntidad);
+            dtTabla.TableName = "Productos";
+
+            string empresa = "";
+            string Almacen = "";
+
+            if (dtTabla.Rows.Count > 0)
             {
-                var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
+                if (dtTabla.Columns.Contains("Empresa"))
+                    empresa = Convert.ToString(dtTabla.Rows[0]["Empresa"]);
 
-                
-                LGProductosCE objEntidad = new LGProductosCE();
-                objEntidad.IdFamilia = Convert.ToInt32(Request["IDFamilia"]);
-                objEntidad.DscProducto = Request["DscProducto"].ToString();
-                objEntidad.CodMarca = Convert.ToInt32(Request["CodMarca"]);
-                objEntidad.CodEstado = Convert.ToInt32(Request["CodEstado"]);
+                if (dtTabla.Columns.Contains("Almacen"))
+                    Almacen = Convert.ToString(dtTabla.Rows[0]["Almacen"]);
+            }
 
-                LGProductosCN objOperacion = new LGProductosCN();
-                DataTable dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR(objEntidad);
+            // ===== FILTRAR SOLO COLUMNAS NECESARIAS =====
+            string[] columnas = {
+                                  "CodigoInterno",
+                                  "CodigoProducto",
+                                  "Producto",
+                                  "CostoSoles",
+                                  "Precio1",
+                                  "Precio2",
+                                  "Precio3",
+                                  "Moneda",
+                                  "Stock"
+                                 };
 
-                int lastCol = dtTabla.Columns.Count;
-              
-                for (int i = ws.MergedCells.Count - 1; i >= 0; i--)
+            DataTable dtSeleccionado = dtTabla.DefaultView.ToTable(false, columnas);            
+            
+            string subtitulo = "REPORTE DE PRODUCTO ";
+
+            using (ExcelPackage pck = new ExcelPackage())
+            {
+                // 4) Plantilla
+                var filePath = Server.MapPath(nombreArchivoRel);
+                byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+                pck.Load(new MemoryStream(fileBytes));
+
+                var ws = pck.Workbook.Worksheets[nombreHoja];
+
+                // ===== FUENTE GLOBAL ARIAL =====
+                ws.Cells.Style.Font.Name = "Arial";
+                ws.Cells.Style.Font.Size = 10;
+
+                // 5) Limpieza
+                int dataStartRow = 6;
+                ws.DeleteRow(dataStartRow, 50000, true);
+
+                // ===== EMPRESA =====
+                ws.Cells["A1:C1"].Merge = true;
+                ws.Cells["A1"].Value = empresa;
+                ws.Cells["A1:C1"].Style.Font.Size = 14;
+                ws.Cells["A1:C1"].Style.Font.Bold = true;
+                ws.Cells["A1:C1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+
+                ws.Cells["A2:C2"].Merge = true;
+                ws.Cells["A2"].Value = Almacen;
+                ws.Cells["A2:C2"].Style.Font.Size = 14;
+                ws.Cells["A2:C2"].Style.Font.Bold = true;
+                ws.Cells["A2:C2"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                // ===== TITULO =====
+                ws.Cells["A3:I3"].Merge = true;
+                ws.Cells["A3"].Value = subtitulo;
+
+                ws.Cells["A3:I3"].Style.Font.Name = "Arial";
+                ws.Cells["A3:I3"].Style.Font.Size = 15;
+                ws.Cells["A3:I3"].Style.Font.Bold = true;
+                ws.Cells["A3:I3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A3:I3"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                ws.Row(3).Height = 25;
+
+                // 7) Cargar tabla (SOLO columnas seleccionadas)
+                ws.Cells["A" + dataStartRow].LoadFromDataTable(dtSeleccionado, true);
+
+                int headerRow = dataStartRow;
+                int lastRow = ws.Dimension.End.Row;
+                int lastCol = ws.Dimension.End.Column;
+
+                // ===== ENCABEZADOS EN MAYUSCULAS =====
+                for (int col = 1; col <= lastCol; col++)
                 {
-                    string addr = ws.MergedCells[i];
-                    var rg = ws.Cells[addr];
-                    if (rg.Start.Row <= 4 && rg.End.Row <= 4)
-                        rg.Merge = false;
+                    var cell = ws.Cells[headerRow, col];
+                    if (cell.Value != null)
+                    {
+                        cell.Value = cell.Value.ToString().ToUpper();
+                    }
                 }
-          
-                int clearToCol = Math.Max(lastCol + 5, 20); 
-                ws.Cells[1, 1, 4, clearToCol].Clear();               
-                ws.DeleteRow(5, 50000, true);                
-                ws.Cells[2, 1, 3, lastCol].Merge = true;
-                ws.Cells[2, 1].Value = "REPORTE PRODUCTO";
-                ws.Cells[2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                ws.Cells[2, 1].Style.Font.Bold = true;
-                ws.Cells[2, 1].Style.Font.Size = 14;
+
                 
-                ws.Cells[4, 1].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
-                ws.Cells[4, 1].Style.Font.Bold = true;
+                // Columnas: 4=CostoSoles, 5=Precio1, 6=Precio2, 7=Precio3, 9=Stock
+                ws.Column(4).Style.Numberformat.Format = "#,##0.00"; 
+                ws.Column(5).Style.Numberformat.Format = "#,##0.00"; 
+                ws.Column(6).Style.Numberformat.Format = "#,##0.00"; 
+                ws.Column(7).Style.Numberformat.Format = "#,##0.00"; 
+                ws.Column(9).Style.Numberformat.Format = "#,##0";    
 
-               
-                ws.Cells[4, lastCol - 1].Value = "Fecha:";
-                ws.Cells[4, lastCol - 1].Style.Font.Bold = true;
+                // Fecha emisión
+                ws.Cells[1, lastCol - 1].Value = "FECHA EMISION :";
+                ws.Cells[1, lastCol - 1].Style.Font.Bold = true;
 
-                ws.Cells[4, lastCol].Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                ws.Cells[4, lastCol].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
+                ws.Cells[1, lastCol].Value = DateTime.Now;
+                ws.Cells[1, lastCol].Style.Numberformat.Format = "dd/MM/yyyy";
 
-              
-                ws.Cells["A5"].LoadFromDataTable(dtTabla, true);
-                ws.Row(5).Style.Font.Bold = true;
+                // ===== ESTILO HEADER TABLA =====
+                using (var rng = ws.Cells[headerRow, 1, headerRow, lastCol])
+                {
+                    rng.Style.Font.Bold = true;
+                    rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    rng.Style.Fill.BackgroundColor.SetColor(Color.Silver);
+                    rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    rng.Style.WrapText = true;
+                }
 
-               
-                ws.View.FreezePanes(6, 1);
+                // ===== BORDES TABLA =====
+                using (var rng = ws.Cells[headerRow, 1, lastRow, lastCol])
+                {
+                    rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                }
+
+                // AutoFilter
+                ws.Cells[headerRow, 1, headerRow, lastCol].AutoFilter = true;
+
+                // Freeze panes
+                ws.View.FreezePanes(headerRow + 1, 1);
+
+                // Auto ajustar columnas
                 ws.Cells[ws.Dimension.Address].AutoFitColumns();
-                
-                byte[] outBytes = pck.GetAsByteArray();
 
-                Response.Clear();
-                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_Producto.xlsx");
-                Response.BinaryWrite(outBytes);
-                Response.End();
+                // 10) Descargar
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    pck.SaveAs(memoryStream);
+                    byte[] content = memoryStream.ToArray();
+
+                    Response.Clear();
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("content-disposition", "attachment; filename=Xls_Productos_Aplicacion.xlsx");
+                    Response.OutputStream.Write(content, 0, content.Length);
+                    Response.Flush();
+                    Response.End();
+                }
             }
         }
 
         public void P_Reporte_Producto_Aplicacion_Excel_Cliente_Proveedor_Karina()
         {
-            // Ruta física de la PLANTILLA
-            string plantillaRel = Request["NombreArchivo"].ToString();
-            string plantillaAbs = Server.MapPath(plantillaRel);
+            
+            string nombreArchivoRel = Convert.ToString(Request["NombreArchivo"]);
+            string nombreHoja = Convert.ToString(Request["NombreHoja"]);
 
-            // Leer bytes de la plantilla (evita bloqueo y no ensucia la plantilla)
-            byte[] templateBytes = System.IO.File.ReadAllBytes(plantillaAbs);
+            
+            TCCuentaCorrienteCE objEntidad = new TCCuentaCorrienteCE();
+            objEntidad.RazonSocial = Convert.ToString(Request["RazonSocial"]);
+            objEntidad.CodTipoCtaCte = Convert.ToInt32(Request["CodTipoCtaCte"]);
+            objEntidad.CodAlmacen = Convert.ToInt32(Session["CodSede"]);
 
-            using (var ms = new MemoryStream(templateBytes))
-            using (ExcelPackage pck = new ExcelPackage(ms))
+            TCCuentaCorrienteCN objOperacion = new TCCuentaCorrienteCN();
+            DataTable dtTabla = objOperacion.F_TCCuentaCorriente_Listar_excel(objEntidad);
+            dtTabla.TableName = "Clientes y Proveedores";                                 
+
+            string subtitulo = (objEntidad.CodTipoCtaCte == 1)
+                ? "REPORTE DE CLIENTES"
+                : (objEntidad.CodTipoCtaCte == 2)
+                    ? "REPORTE DE PROVEEDORES"
+                    : "REPORTE";
+
+            string empresa = "";
+
+            if (dtTabla.Rows.Count > 0 && dtTabla.Columns.Contains("Empresa"))
             {
-                var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
-
-                // ===== Parámetros =====
-                LGProductosCE objEntidad = new LGProductosCE();
-
-                objEntidad.NroRuc = string.IsNullOrWhiteSpace(Request["NroRuc"])
-                    ? null
-                    : Request["NroRuc"].ToString();
-
-                int codCtaCte;
-                int.TryParse(Request["CodCtaCte"], out codCtaCte);
-                objEntidad.CodCtaCte = codCtaCte; // si viene 0, tu SP ya lo toma como "todo" (según lo que arreglaste)
-
-                // ===== Datos =====
-                LGProductosCN objOperacion = new LGProductosCN();
-                DataTable dtTabla = objOperacion.F_LGPRODUCTOS_APLICACIONES_LISTAR_EXCEL_CLIENTE_PROVEEDOR_KARINA(objEntidad);
-
-                int lastCol = dtTabla.Columns.Count;
-
-                // ===== Limpiar cabecera de plantilla (filas 1 a 4) =====
-                for (int i = ws.MergedCells.Count - 1; i >= 0; i--)
-                {
-                    string addr = ws.MergedCells[i];
-                    var rg = ws.Cells[addr];
-                    if (rg.Start.Row <= 4 && rg.End.Row <= 4)
-                        rg.Merge = false;
-                }
-
-                int clearToCol = Math.Max(lastCol + 5, 20);
-                ws.Cells[1, 1, 4, clearToCol].Clear();
-
-                // ===== Limpiar data vieja (desde fila 5 hacia abajo) =====
-                ws.DeleteRow(5, 50000, true);
-
-                // ===== Título (solo fila 2, no fila 2-3) =====
-                ws.Cells[2, 1, 2, lastCol].Merge = true;
-                ws.Cells[2, 1].Value = "REPORTE CLIENTE / PROVEEDOR";
-                ws.Cells[2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                ws.Cells[2, 1].Style.Font.Bold = true;
-                ws.Cells[2, 1].Style.Font.Size = 14;
-
-                // ===== Cantidad y Fecha =====
-                ws.Cells[4, 1].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
-                ws.Cells[4, 1].Style.Font.Bold = true;
-
-                // Fecha a la derecha
-                ws.Cells[4, lastCol - 1].Value = "Fecha:";
-                ws.Cells[4, lastCol - 1].Style.Font.Bold = true;
-
-                ws.Cells[4, lastCol].Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                ws.Cells[4, lastCol].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
-
-                // ===== Tabla =====
-                ws.Cells["A5"].LoadFromDataTable(dtTabla, true);
-                ws.Row(5).Style.Font.Bold = true;
-
-                // Congelar encabezados
-                ws.View.FreezePanes(6, 1);
-
-                // Ajustar ancho
-                ws.Cells[ws.Dimension.Address].AutoFitColumns();
-
-                // Descargar sin guardar en disco
-                byte[] outBytes = pck.GetAsByteArray();
-
-                Response.Clear();
-                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_Cliente_Proveedor.xlsx");
-                Response.BinaryWrite(outBytes);
-                Response.End();
+                empresa = Convert.ToString(dtTabla.Rows[0]["Empresa"]);
             }
-        }
-        public void P_Reporte_GuiaRemision_Excel()
-        {
-            // Ruta física de la PLANTILLA
-            string plantillaRel = (Request["NombreArchivo"] ?? "").ToString();
-
-            // Agarra solo el nombre del archivo (por si viene con "Reportes/...")
-            string nombreArchivo = System.IO.Path.GetFileName(plantillaRel);
-
-            // Fuerza la carpeta Reportes (donde está tu xlsx)
-            string plantillaAbs = Server.MapPath("~/Reportes/" + nombreArchivo);
-
-
-
-            byte[] templateBytes = System.IO.File.ReadAllBytes(plantillaAbs);
-
-            using (var ms = new MemoryStream(templateBytes))
-            using (ExcelPackage pck = new ExcelPackage(ms))
+            if (dtTabla.Columns.Contains("Empresa"))
             {
-                var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
-
-                // ===== Parámetros (los mismos del Crystal) =====
-                NotaIngresoSalidaCabCE objEntidad = new NotaIngresoSalidaCabCE();
-                objEntidad.CodAlmacen = Convert.ToInt32(Session["CodSede"]);
-                objEntidad.CodUsuario = Convert.ToInt32(Session["CodUsuario"]);
-
-                int codEstado; int.TryParse(Request["CodEstado"], out codEstado);
-                objEntidad.CodEstado = (codEstado <= 0) ? 0 : codEstado;
-
-                int codTipoDoc; int.TryParse(Request["CodTipoDoc"], out codTipoDoc);
-                objEntidad.CodTipoDoc = (codTipoDoc <= 0) ? 0 : codTipoDoc;
-
-                int desde; int hasta;
-                int.TryParse(Request["Desde"], out desde);
-                int.TryParse(Request["Hasta"], out hasta);
-
-                objEntidad.DesdeInt = (desde <= 0) ? 19900101 : desde;
-                objEntidad.HastaInt = (hasta <= 0) ? 19900101 : hasta;
-
-                // ===== Datos =====
-                NotaIngresoSalidaCabCN objOperacion = new NotaIngresoSalidaCabCN();
-                DataTable dtBase = objOperacion.F_TRASLADOSCAB_REPORTE(objEntidad);
-
-                // ===== DataTable FINAL (solo columnas útiles y en orden) =====
-                DataTable dtTabla = new DataTable();
-                dtTabla.Columns.Add("Numero", typeof(string));
-                dtTabla.Columns.Add("Emision", typeof(string));
-                dtTabla.Columns.Add("Destino", typeof(string));
-                dtTabla.Columns.Add("Estado", typeof(string));
-                dtTabla.Columns.Add("Codigo", typeof(string));
-                dtTabla.Columns.Add("Descripcion", typeof(string));
-                dtTabla.Columns.Add("Cant.", typeof(decimal));
-                dtTabla.Columns.Add("Responsable", typeof(string));
-
-                foreach (DataRow r in dtBase.Rows)
-                {
-                    dtTabla.Rows.Add(
-                        dtBase.Columns.Contains("Numero") ? r["Numero"].ToString() : "",
-                        dtBase.Columns.Contains("Emision") ? r["Emision"].ToString() : "",
-                        dtBase.Columns.Contains("Destino") ? r["Destino"].ToString() : "",
-                        dtBase.Columns.Contains("Estado") ? r["Estado"].ToString() : "",
-                        dtBase.Columns.Contains("Numero1") ? r["Numero1"].ToString() : "",          // Codigo
-                        dtBase.Columns.Contains("Observacion") ? r["Observacion"].ToString() : "", // Descripcion
-                        dtBase.Columns.Contains("Numero2") ? Convert.ToDecimal(r["Numero2"]) : 0,  // Cantidad
-                        dtBase.Columns.Contains("Responsable") ? r["Responsable"].ToString() : ""
-                    );
-                }
-
-                int lastCol = dtTabla.Columns.Count;
-
-                // ===== Limpiar cabecera (filas 1 a 4) =====
-                for (int i = ws.MergedCells.Count - 1; i >= 0; i--)
-                {
-                    string addr = ws.MergedCells[i];
-                    var rg = ws.Cells[addr];
-                    if (rg.Start.Row <= 4 && rg.End.Row <= 4)
-                        rg.Merge = false;
-                }
-
-                int clearToCol = Math.Max(lastCol + 5, 30);
-                ws.Cells[1, 1, 4, clearToCol].Clear();
-
-                // ===== Limpiar data vieja =====
-                ws.DeleteRow(5, 50000, true);
-
-                // ===== Título =====
-                ws.Cells[2, 1, 2, lastCol].Merge = true;
-                ws.Cells[2, 1].Value = "REPORTE GUIA DE REMISION";
-                ws.Cells[2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                ws.Cells[2, 1].Style.Font.Bold = true;
-                ws.Cells[2, 1].Style.Font.Size = 14;
-
-                // ===== Subtítulo =====
-                string subtitulo = (objEntidad.DesdeInt != 19900101)
-                    ? ("DESDE " + Request["Desde"] + " HASTA " + Request["Hasta"])
-                    : "SIN RANGO DE FECHAS";
-
-                ws.Cells[3, 1, 3, lastCol].Merge = true;
-                ws.Cells[3, 1].Value = subtitulo;
-                ws.Cells[3, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                ws.Cells[3, 1].Style.Font.Bold = true;
-
-                // ===== Cantidad y Fecha =====
-                ws.Cells[4, 1].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
-                ws.Cells[4, 1].Style.Font.Bold = true;
-
-                ws.Cells[4, lastCol - 1].Value = "Fecha:";
-                ws.Cells[4, lastCol - 1].Style.Font.Bold = true;
-
-                ws.Cells[4, lastCol].Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                ws.Cells[4, lastCol].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
-
-                // ===== Tabla =====
-                ws.Cells["A5"].LoadFromDataTable(dtTabla, true);
-                ws.Row(5).Style.Font.Bold = true;
-
-                // Congelar encabezados
-                ws.View.FreezePanes(6, 1);
-
-                // Ajustar ancho
-                ws.Cells[ws.Dimension.Address].AutoFitColumns();
-
-                // Descargar
-                byte[] outBytes = pck.GetAsByteArray();
-
-                Response.Clear();
-                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_GuiaRemision.xlsx");
-                Response.BinaryWrite(outBytes);
-                Response.End();
+                dtTabla.Columns.Remove("Empresa");
             }
-        }
-        //public void P_Reporte_OrdenCompra_Excel()
-        //{
-        //    // Ruta física de la PLANTILLA
-        //    string plantillaRel = Request["NombreArchivo"].ToString();
-        //    string plantillaAbs = Server.MapPath(plantillaRel);
 
-        //    byte[] templateBytes = File.ReadAllBytes(plantillaAbs);
-
-        //    using (var ms = new MemoryStream(templateBytes))
-        //    using (ExcelPackage pck = new ExcelPackage(ms))
-        //    {
-        //        var ws = pck.Workbook.Worksheets[Request["NombreHoja"].ToString()];
-
-        //        // ===== Parámetros (mismos filtros del Buscar) =====
-        //        string serieDoc = Request["Filtro_SerieDoc"];
-        //        string numero = Request["Filtro_Numero"];
-        //        string desde = Request["Filtro_Desde"];
-        //        string hasta = Request["Filtro_Hasta"];
-
-        //        int codCtaCte;
-        //        int.TryParse(Request["Filtro_CodCtaCte"], out codCtaCte);
-
-        //        int codEstado;
-        //        int.TryParse(Request["Filtro_CodEstado"], out codEstado);
-
-        //        int chkNumero = (Request["Filtro_ChkNumero"] ?? "0") == "1" ? 1 : 0;
-        //        int chkFecha = (Request["Filtro_ChkFecha"] ?? "0") == "1" ? 1 : 0;
-        //        int chkCliente = (Request["Filtro_ChkCliente"] ?? "0") == "1" ? 1 : 0;
-
-        //        // ===== Datos =====
-        //        // OJO: aquí debes llamar a tu consulta REAL de Orden de Compra (la misma que llena grvConsulta)
-        //        // Te dejo la firma esperada:
-        //        // DataTable dtTabla = new OrdenCompraCN().F_OrdenCompra_Listar_Excel(...);
-
-        //        DataTable dtTabla = F_OrdenCompra_Listar_Excel(
-        //            serieDoc, numero, desde, hasta,
-        //            codCtaCte, chkNumero, chkFecha, chkCliente,
-        //            codEstado
-        //        );
+            using (ExcelPackage pck = new ExcelPackage())
+            {
                
-        //        int lastCol = (dtTabla != null) ? dtTabla.Columns.Count : 1;
+                var filePath = Server.MapPath(nombreArchivoRel);
+                byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+                pck.Load(new MemoryStream(fileBytes));
 
-        //        if (dtTabla == null || dtTabla.Rows.Count == 0)
-        //        {
-        //            Response.Clear();
-        //            Response.ContentType = "text/plain";
-        //            Response.Write("No se encontraron registros para exportar.");
-        //            Response.End();
-        //            return;
-        //        }
+                var ws = pck.Workbook.Worksheets[nombreHoja];
 
-        //        // ===== Limpiar cabecera de plantilla (filas 1 a 4) =====
-        //        for (int i = ws.MergedCells.Count - 1; i >= 0; i--)
-        //        {
-        //            string addr = ws.MergedCells[i];
-        //            var rg = ws.Cells[addr];
-        //            if (rg.Start.Row <= 4 && rg.End.Row <= 4)
-        //                rg.Merge = false;
-        //        }
+               
+                ws.Cells.Style.Font.Name = "Arial";
+                ws.Cells.Style.Font.Size = 10;
 
-        //        int clearToCol = Math.Max(lastCol + 5, 20);
-        //        ws.Cells[1, 1, 4, clearToCol].Clear();
+                
+                int dataStartRow = 5;
+                ws.DeleteRow(dataStartRow, 50000, true);
 
-        //        // ===== Limpiar data vieja (desde fila 5 hacia abajo) =====
-        //        ws.DeleteRow(5, 50000, true);
+                
+                ws.Cells["A1:C1"].Merge = true;
+                ws.Cells["A1"].Value = empresa;
+                ws.Cells["A1:C1"].Style.Font.Size = 14;
+                ws.Cells["A1:C1"].Style.Font.Bold = true;
+                ws.Cells["A1:C1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                ws.Cells["A1:C1"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-        //        // ===== Título =====
-        //        ws.Cells[2, 1, 2, lastCol].Merge = true;
-        //        ws.Cells[2, 1].Value = "REPORTE ORDENES DE COMPRA";
-        //        ws.Cells[2, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-        //        ws.Cells[2, 1].Style.Font.Bold = true;
-        //        ws.Cells[2, 1].Style.Font.Size = 14;
+                
+                ws.Cells["A3:H3"].Merge = true;
+                ws.Cells["A3"].Value = subtitulo;
 
-        //        // ===== Cantidad y Fecha =====
-        //        ws.Cells[4, 1].Value = "Cantidad de registros: " + dtTabla.Rows.Count;
-        //        ws.Cells[4, 1].Style.Font.Bold = true;
+                ws.Cells["A3:H3"].Style.Font.Size = 15;
+                ws.Cells["A3:H3"].Style.Font.Bold = true;
+                ws.Cells["A3:H3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A3:H3"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Row(3).Height = 25;
 
-        //        ws.Cells[4, lastCol - 1].Value = "Fecha:";
-        //        ws.Cells[4, lastCol - 1].Style.Font.Bold = true;
+                
+                ws.Cells["A" + dataStartRow].LoadFromDataTable(dtTabla, true);
 
-        //        ws.Cells[4, lastCol].Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-        //        ws.Cells[4, lastCol].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
 
-        //        // ===== Tabla =====
-        //        ws.Cells["A5"].LoadFromDataTable(dtTabla, true);
-        //        ws.Row(5).Style.Font.Bold = true;
+                int headerRow = dataStartRow;
+                int lastRow = ws.Dimension.End.Row;
+                int lastCol = ws.Dimension.End.Column;                
 
-        //        // Congelar encabezados
-        //        ws.View.FreezePanes(6, 1);
 
-        //        // Ajustar ancho
-        //        ws.Cells[ws.Dimension.Address].AutoFitColumns();
+                
+                for (int col = 1; col <= lastCol; col++)
+                {
+                    var cell = ws.Cells[headerRow, col];
+                    if (cell.Value != null)
+                        cell.Value = cell.Value.ToString().ToUpper();
+                }              
 
-        //        // Descargar sin guardar en disco
-        //        byte[] outBytes = pck.GetAsByteArray();
+              
+                ws.Cells[1, lastCol - 1].Value = "FECHA EMISION :";
+                ws.Cells[1, lastCol - 1].Style.Font.Bold = true;
+                ws.Cells[1, lastCol - 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
 
-        //        Response.Clear();
-        //        Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        //        Response.AddHeader("Content-Disposition", "attachment; filename=Reporte_OrdenCompra.xlsx");
-        //        Response.BinaryWrite(outBytes);
-        //        Response.End();
-        //    }
-        //}
+                ws.Cells[1, lastCol].Value = DateTime.Now;
+                ws.Cells[1, lastCol].Style.Numberformat.Format = "dd/MM/yyyy";
+                ws.Cells[1, lastCol].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                
+                using (var rng = ws.Cells[headerRow, 1, headerRow, lastCol])
+                {
+                    rng.Style.Font.Bold = true;
+                    rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    rng.Style.Fill.BackgroundColor.SetColor(Color.Silver);
+                    rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    rng.Style.WrapText = true;
+                }
+
+                
+                using (var rng = ws.Cells[headerRow, 1, lastRow, lastCol])
+                {
+                    rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                }
+
+                
+                ws.Cells[headerRow, 1, headerRow, lastCol].AutoFilter = true;
+
+                // Freeze panes
+                ws.View.FreezePanes(headerRow + 1, 1);
+
+                // Auto ajustar columnas
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                // 10) Descargar (SIN guardar archivo físico)
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    pck.SaveAs(memoryStream);
+                    byte[] content = memoryStream.ToArray();
+
+                    Response.Clear();
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("content-disposition", "attachment; filename=Xls_Cliente_Proveedores.xlsx");
+                    Response.OutputStream.Write(content, 0, content.Length);
+                    Response.Flush();
+                    Response.End();
+                }
+            }
+        }
+
+        public void Exportar_TrasladosCab_Reporte_Excel()
+        {
+            string nombreArchivoRel = Convert.ToString(Request["NombreArchivo"]);
+            string nombreHoja = Convert.ToString(Request["NombreHoja"]);
+
+            NotaIngresoSalidaCabCE objCE = new NotaIngresoSalidaCabCE();
+            objCE.CodAlmacen = Convert.ToInt32(Session["CodSede"]);
+            objCE.CodEstado = Convert.ToInt32(Request.QueryString["CodEstado"]);
+            objCE.CodTipoDoc = Convert.ToInt32(Request.QueryString["CodTipoDoc"]);
+            objCE.DesdeInt = Convert.ToInt32(Request.QueryString["Desde"]);
+            objCE.HastaInt = Convert.ToInt32(Request.QueryString["Hasta"]);
+            objCE.CodUsuario = Convert.ToInt32(Session["CodUsuario"]);
+
+            string desdeRaw = Request.QueryString["Desde"];
+            string hastaRaw = Request.QueryString["Hasta"];
+            string desdeFormato = DateTime.ParseExact(desdeRaw, "yyyyMMdd", null).ToString("dd/MM/yyyy");
+            string hastaFormato = DateTime.ParseExact(hastaRaw, "yyyyMMdd", null).ToString("dd/MM/yyyy");
+
+            NotaIngresoSalidaCabCN objCN = new NotaIngresoSalidaCabCN();
+            DataTable dt = objCN.F_TRASLADOSCAB_REPORTE(objCE);
+
+            var filePath = Server.MapPath(nombreArchivoRel);
+            byte[] fileBytes = File.ReadAllBytes(filePath);
+
+            using (ExcelPackage pck = new ExcelPackage())
+            {
+                pck.Load(new MemoryStream(fileBytes));
+                var ws = pck.Workbook.Worksheets[nombreHoja];
+
+                ws.Cells.Style.Font.Name = "Arial";
+                ws.Cells.Style.Font.Size = 10;
+
+                // CABECERA
+                ws.Cells["B2"].Value = "REPORTE GUIA DE REMISION";
+                ws.Cells["A3"].Value = "DESDE  " + desdeFormato + "   HASTA  " + hastaFormato;
+
+                int dataStartRow = 6;
+                ws.DeleteRow(dataStartRow, 50000, true);
+
+                // HEADERS
+                ws.Cells[5, 1].Value = "NUMERO";
+                ws.Cells[5, 2].Value = "EMISION";
+                ws.Cells[5, 3].Value = "PARTIDA";
+                ws.Cells[5, 4].Value = "ESTADO";
+                ws.Cells[5, 5].Value = "CODIGO";
+                ws.Cells[5, 6].Value = "DESCRIPCION";
+                ws.Cells[5, 7].Value = "CANTIDAD";
+                ws.Cells[5, 8].Value = "RESPONSABLE";
+
+                // LLENAR DATA EN ORDEN
+                int fila = dataStartRow;
+                foreach (DataRow r in dt.Rows)
+                {
+                    ws.Cells[fila, 1].Value = r["Numero"];        // NUMERO (A)
+                    ws.Cells[fila, 2].Value = r["Emision"];       // EMISION (B)
+                    ws.Cells[fila, 3].Value = r["Destino"];       // PARTIDA (C)  <-- aquí estás usando Destino como Partida
+                    ws.Cells[fila, 4].Value = r["Estado"];        // ESTADO (D)
+                    ws.Cells[fila, 5].Value = r["Numero1"];       // CODIGO (E)
+                    ws.Cells[fila, 6].Value = r["Observacion"];   // DESCRIPCION (F)
+                    ws.Cells[fila, 7].Value = r["Numero2"];       // CANTIDAD (G)
+                    ws.Cells[fila, 8].Value = r["Responsable"];   // RESPONSABLE (H)
+
+                    fila++;
+                }
+
+                // OCULTAR COLUMNAS DESDE LA 9 EN ADELANTE
+                for (int col = 9; col <= 16384; col++)
+                    ws.Column(col).Hidden = true;
+
+                // FORMATO
+                if (dt.Rows.Count > 0)
+                {
+                    int lastRow = fila - 1;
+                    using (var rng = ws.Cells[dataStartRow, 1, lastRow, 8])
+                    {
+                        rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    }
+                }
+
+               
+
+
+
+                ws.View.FreezePanes(6, 1);
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    pck.SaveAs(ms);
+                    byte[] content = ms.ToArray();
+
+                    Response.Clear();
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("content-disposition",
+                        "attachment; filename=Xls_GuiaRemision_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+                    Response.OutputStream.Write(content, 0, content.Length);
+                    Response.Flush();
+                    Response.End();
+                }
+            }
+        }
 
 
         public void P_ReporteVentasDetallado_Povis()
