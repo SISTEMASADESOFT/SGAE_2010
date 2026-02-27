@@ -1350,7 +1350,8 @@ function F_EditarRegistro(Fila) {
         $(Cuerpo + 'txtCostoEdicion').val(parseFloat($(hfCostoInicial).val()).toFixed(2));
         $(Cuerpo + 'ddlMonedaCostoInicialEdicion').val($(hfCodMonedaInicial).val());
         $(Cuerpo + 'txtObservacionEdicion').val($(hfObservacion).val());
-        $(Cuerpo + 'txtCodigo2').val($(lblCodigo2).text());
+        $(Cuerpo + 'txtCodigo2Edicion').val($(lblCodigo2).text());
+        //202260227
 
         if ($(hfFlagBloqueoMayorista).val() == 0)
             $(Cuerpo + 'chkBloqueoMayoristaEdicion').prop('checked', false);
