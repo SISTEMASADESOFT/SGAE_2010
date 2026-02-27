@@ -203,6 +203,9 @@ namespace SistemaInventario.Reportes
                 case 10003:
                     Exportar_TrasladosCab_Reporte_Excel();
                     break;
+                case 10004:
+                    Exportar_OrdenCompraKarina_Reporte_Excel();
+                    break;
             
             }
         }
@@ -6865,7 +6868,7 @@ namespace SistemaInventario.Reportes
                 {
                     ws.Cells[fila, 1].Value = r["Numero"];        // NUMERO (A)
                     ws.Cells[fila, 2].Value = r["Emision"];       // EMISION (B)
-                    ws.Cells[fila, 3].Value = r["Destino"];       // PARTIDA (C)  <-- aquí estás usando Destino como Partida
+                    ws.Cells[fila, 3].Value = r["Destino"];       // PARTIDA (C)
                     ws.Cells[fila, 4].Value = r["Estado"];        // ESTADO (D)
                     ws.Cells[fila, 5].Value = r["Numero1"];       // CODIGO (E)
                     ws.Cells[fila, 6].Value = r["Observacion"];   // DESCRIPCION (F)
@@ -6879,10 +6882,11 @@ namespace SistemaInventario.Reportes
                 for (int col = 9; col <= 16384; col++)
                     ws.Column(col).Hidden = true;
 
-                // FORMATO
+                // FORMATO + AJUSTE DE COLUMNAS (ESTO ES LO QUE TE FALTABA)
                 if (dt.Rows.Count > 0)
                 {
                     int lastRow = fila - 1;
+
                     using (var rng = ws.Cells[dataStartRow, 1, lastRow, 8])
                     {
                         rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
@@ -6891,11 +6895,23 @@ namespace SistemaInventario.Reportes
                         rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
                         rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     }
+
+                    // AutoFit (ajusta al contenido)
+                    ws.Cells[5, 1, lastRow, 8].AutoFitColumns();
+
+                    // (Opcional recomendado) anchos fijos para que quede “bonito”
+                    ws.Column(1).Width = 18; // NUMERO
+                    ws.Column(2).Width = 12; // EMISION
+                    ws.Column(3).Width = 18; // PARTIDA
+                    ws.Column(4).Width = 12; // ESTADO
+                    ws.Column(5).Width = 14; // CODIGO
+                    ws.Column(6).Width = 45; // DESCRIPCION
+                    ws.Column(7).Width = 10; // CANTIDAD
+                    ws.Column(8).Width = 22; // RESPONSABLE
+
+                    // (Opcional) que DESCRIPCION baje a 2 líneas si es largo
+                    ws.Column(6).Style.WrapText = true;
                 }
-
-               
-
-
 
                 ws.View.FreezePanes(6, 1);
 
@@ -6907,7 +6923,7 @@ namespace SistemaInventario.Reportes
                     Response.Clear();
                     Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                     Response.AddHeader("content-disposition",
-                        "attachment; filename=Xls_GuiaRemision_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+                        "attachment; filename=Xls_GuiaRemision" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
                     Response.OutputStream.Write(content, 0, content.Length);
                     Response.Flush();
                     Response.End();
@@ -6915,7 +6931,158 @@ namespace SistemaInventario.Reportes
             }
         }
 
+        //franco  26/02/2026
+       
+        public void Exportar_OrdenCompraKarina_Reporte_Excel()
+        {
+            
 
+
+            // 1) Plantilla
+            string nombreArchivoRel = Convert.ToString(Request.QueryString["NombreArchivo"]);
+            string nombreHoja = Convert.ToString(Request.QueryString["NombreHoja"]);
+
+            NotaIngresoSalidaCabCE objEntidad = new NotaIngresoSalidaCabCE();
+
+            objEntidad.SerieDoc = Convert.ToString(Request.QueryString["Filtro_SerieDoc"]);
+            objEntidad.NumeroDoc = Convert.ToString(Request.QueryString["Filtro_Numero"]);            
+            objEntidad.Desde = Convert.ToDateTime(Request.QueryString["Filtro_Desde"]);
+            objEntidad.Hasta = Convert.ToDateTime(Request.QueryString["Filtro_Hasta"]);
+            objEntidad.CodCtaCte = Convert.ToInt32(Request.QueryString["Filtro_CodCtaCte"]);
+
+
+            var desde = Convert.ToDateTime(Request.QueryString["Filtro_Desde"]);
+            var hasta = Convert.ToDateTime(Request.QueryString["Filtro_Hasta"]);
+
+            string desdeFormato = desde.ToString("dd/MM/yyyy");
+            string hastaFormato = hasta.ToString("dd/MM/yyyy");
+
+
+            int filtroChkNumero = Convert.ToInt32(Request.QueryString["Filtro_ChkNumero"] ?? "0");
+            int filtroChkFecha = Convert.ToInt32(Request.QueryString["Filtro_ChkFecha"] ?? "0");
+            int filtroChkCliente = Convert.ToInt32(Request.QueryString["Filtro_ChkCliente"] ?? "0");
+
+            objEntidad.CodTipoDocSust = Convert.ToInt32(Request.QueryString["Filtro_CodTipoDocSust"]);
+            objEntidad.CodClasificacion = Convert.ToInt32(Request.QueryString["Filtro_CodClasificacion"]);
+            objEntidad.CodEstado = Convert.ToInt32(Request.QueryString["Filtro_CodEstado"]);
+
+
+            int iCodEmpresa = 3;
+
+            objEntidad.CodTipoOperacion = 2;
+            objEntidad.CodEmpresa = iCodEmpresa;
+            objEntidad.CodAlmacen = Convert.ToInt32(Session["CodSede"]);
+            objEntidad.CodTipoDoc = 7;
+
+
+
+            objEntidad.NumeroDoc = (filtroChkNumero == 1) ? objEntidad.NumeroDoc : "";
+
+            if (filtroChkFecha == 1)
+            {
+                // OJO: si tus txtDesde/txtHasta vienen dd/MM/yyyy, usa ParseExact
+                objEntidad.Desde = Convert.ToDateTime(objEntidad.Desde);
+                objEntidad.Hasta = Convert.ToDateTime(objEntidad.Hasta);
+            }
+            else
+            {
+                objEntidad.Desde = Convert.ToDateTime("01/01/1990");
+                objEntidad.Hasta = Convert.ToDateTime("01/01/1990");
+            }
+
+            objEntidad.CodCtaCte = (filtroChkCliente == 1) ? objEntidad.CodCtaCte : 0;
+
+           
+            NotaIngresoSalidaCabCN objOperacion = new NotaIngresoSalidaCabCN();
+
+            DataTable dtTabla = objOperacion.F_ORDENCOMPRA_LISTAR_EXCEL(objEntidad);
+            dtTabla.TableName = "Consulta";
+
+            // (Opcional) seleccionar columnas si no quieres todas:
+            // string[] columnas = { "Col1","Col2","Col3" };
+            // DataTable dtSeleccionado = dtTabla.DefaultView.ToTable(false, columnas);
+
+            string subtitulo = "REPORTE ORDEN COMPRA";
+
+            using (ExcelPackage pck = new ExcelPackage())
+            {
+                // 5) Cargar plantilla
+                var filePath = Server.MapPath(nombreArchivoRel);
+                byte[] fileBytes = File.ReadAllBytes(filePath);
+                pck.Load(new MemoryStream(fileBytes));
+
+                var ws = pck.Workbook.Worksheets[nombreHoja];
+
+                // Fuente global
+                ws.Cells.Style.Font.Name = "Arial";
+                ws.Cells.Style.Font.Size = 10;
+
+                // 6) Limpiar data previa
+                int dataStartRow = 6;
+                ws.DeleteRow(dataStartRow, 50000, true);
+
+                // 7) Cabecera / título (simple)
+                ws.Cells["A4"].Value = "DESDE  " + desdeFormato + "   HASTA  " + hastaFormato;
+
+                ws.Cells["A3:AA3"].Merge = true;
+                ws.Cells["A3"].Value = subtitulo;
+                ws.Cells["A3:AA3"].Style.Font.Size = 15;
+                ws.Cells["A3:AA3"].Style.Font.Bold = true;
+                ws.Cells["A3:AA3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Row(3).Height = 25;
+
+                // 8) Cargar tabla
+                ws.Cells["A" + dataStartRow].LoadFromDataTable(dtTabla, true);
+
+                int headerRow = dataStartRow;
+                int lastRow = ws.Dimension.End.Row;
+                int lastCol = ws.Dimension.End.Column;
+
+              
+
+                // Header style
+                using (var rng = ws.Cells[headerRow, 1, headerRow, lastCol])
+                {
+                    rng.Style.Font.Bold = true;
+                    rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    rng.Style.Fill.BackgroundColor.SetColor(Color.Silver);
+                    rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    rng.Style.WrapText = true;
+                }
+
+                // Bordes
+                using (var rng = ws.Cells[headerRow, 1, lastRow, lastCol])
+                {
+                    rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                }
+
+                // Autofilter + freeze
+                ws.Cells[headerRow, 1, headerRow, lastCol].AutoFilter = true;
+                ws.View.FreezePanes(headerRow + 1, 1);
+
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                // 9) Descargar
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    pck.SaveAs(memoryStream);
+                    byte[] content = memoryStream.ToArray();
+
+                    Response.Clear();
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("content-disposition", "attachment; filename=Xls_OrdenCompra.xlsx");
+                    Response.OutputStream.Write(content, 0, content.Length);
+                    Response.Flush();
+                    Response.End();
+                }
+            }
+        }
+        
         public void P_ReporteVentasDetallado_Povis()
         {
             DocumentoVentaCabCE objEntidadVenta = new DocumentoVentaCabCE();

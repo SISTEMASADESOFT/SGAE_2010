@@ -2359,45 +2359,58 @@ namespace CapaDatos
           finally { dta_consulta.Dispose(); }
       }
       //franco
-
-
       public DataTable F_ORDENCOMPRA_LISTAR_EXCEL(NotaIngresoSalidaCabCE objEntidadBE)
       {
+
           DataTable dta_consulta = null;
 
           try
           {
+
               using (SqlConnection sql_conexion = new SqlConnection())
               {
+
                   sql_conexion.ConnectionString = ConfigurationManager.ConnectionStrings["BDCONEXION"].ConnectionString;
                   sql_conexion.Open();
 
                   using (SqlCommand sql_comando = new SqlCommand())
                   {
+
                       sql_comando.Connection = sql_conexion;
                       sql_comando.CommandType = CommandType.StoredProcedure;
                       sql_comando.CommandText = "PA_ORDENCOMPRA_LISTAR_EXCEL";
 
-                      // Solo filtramos por proveedor si viene > 0, si no => NULL (trae todo)
-                      if (objEntidadBE.CodCtaCteConsulta > 0)
-                          sql_comando.Parameters.Add("@CodCtaCte", SqlDbType.Int).Value = objEntidadBE.CodCtaCteConsulta;
-                      else
-                          sql_comando.Parameters.Add("@CodCtaCte", SqlDbType.Int).Value = DBNull.Value;
+                      sql_comando.Parameters.Add("@CodAlmacen", SqlDbType.Int).Value = objEntidadBE.CodAlmacen;
+                      if (objEntidadBE.CodEmpresa > 0)
+                          sql_comando.Parameters.Add("@CodEmpresa", SqlDbType.Int).Value = objEntidadBE.CodEmpresa;
+                      sql_comando.Parameters.Add("@CodTipoOperacion", SqlDbType.Int).Value = objEntidadBE.CodTipoOperacion;
+                      sql_comando.Parameters.Add("@CodTipoDoc", SqlDbType.Int).Value = objEntidadBE.CodTipoDoc;
 
-                      // Como tu JS no manda otros filtros, los mandamos NULL
-                      sql_comando.Parameters.Add("@CodAlmacen", SqlDbType.Int).Value = DBNull.Value;
-                      sql_comando.Parameters.Add("@CodEmpresa", SqlDbType.Int).Value = DBNull.Value;
-                      sql_comando.Parameters.Add("@Desde", SqlDbType.Int).Value = DBNull.Value;
-                      sql_comando.Parameters.Add("@Hasta", SqlDbType.Int).Value = DBNull.Value;
-                      sql_comando.Parameters.Add("@SerieDoc", SqlDbType.VarChar, 4).Value = DBNull.Value;
-                      sql_comando.Parameters.Add("@NumeroDoc", SqlDbType.VarChar, 8).Value = DBNull.Value;
-                      sql_comando.Parameters.Add("@CodTipoOperacion", SqlDbType.Int).Value = DBNull.Value;
-                      sql_comando.Parameters.Add("@CodTipoDocsust", SqlDbType.Int).Value = DBNull.Value;
-                      sql_comando.Parameters.Add("@CodTipoDoc", SqlDbType.Int).Value = DBNull.Value;
-                      sql_comando.Parameters.Add("@CodEstado", SqlDbType.Int).Value = DBNull.Value;
+                      if (objEntidadBE.SerieDoc != "TODOS")
+                          sql_comando.Parameters.Add("@SerieDoc", SqlDbType.VarChar, 4).Value = objEntidadBE.SerieDoc;
+
+                      if (objEntidadBE.CodCtaCte != 0)
+                          sql_comando.Parameters.Add("@CodCtaCte", SqlDbType.Int).Value = objEntidadBE.CodCtaCte;
+
+                      if (objEntidadBE.CodEstado != 0)
+                          sql_comando.Parameters.Add("@CodEstado", SqlDbType.Int).Value = objEntidadBE.CodEstado;
+
+                      if (objEntidadBE.Desde.ToString("yyyyMMdd") != "19900101")
+                      {
+                          sql_comando.Parameters.Add("@Desde", SqlDbType.Int).Value = objEntidadBE.Desde.ToString("yyyyMMdd");
+                          sql_comando.Parameters.Add("@Hasta", SqlDbType.Int).Value = objEntidadBE.Hasta.ToString("yyyyMMdd");
+                      }
+
+                      if (objEntidadBE.NumeroDoc != "")
+                          sql_comando.Parameters.Add("@NumeroDoc", SqlDbType.VarChar, 8).Value = objEntidadBE.NumeroDoc;
+
+                      if (objEntidadBE.CodTipoDocSust != 0)
+                          sql_comando.Parameters.Add("@CodTipoDocSust", SqlDbType.Int).Value = objEntidadBE.CodTipoDocSust;
 
                       dta_consulta = new DataTable();
+
                       dta_consulta.Load(sql_comando.ExecuteReader());
+
                       return dta_consulta;
                   }
               }
@@ -2406,11 +2419,10 @@ namespace CapaDatos
           {
               throw ex;
           }
-          finally
-          {
-              if (dta_consulta != null) dta_consulta.Dispose();
-          }
+          finally { dta_consulta.Dispose(); }
       }
+
+     
 
       public NotaIngresoSalidaCabCE F_Eliminacion_NotaIngreso(NotaIngresoSalidaCabCE objEntidadBE)
       {
