@@ -6899,7 +6899,7 @@ namespace SistemaInventario.Reportes
                     // AutoFit (ajusta al contenido)
                     ws.Cells[5, 1, lastRow, 8].AutoFitColumns();
 
-                    // (Opcional recomendado) anchos fijos para que quede “bonito”
+                    // anchos fijos para que quede “bonito”
                     ws.Column(1).Width = 18; // NUMERO
                     ws.Column(2).Width = 12; // EMISION
                     ws.Column(3).Width = 18; // PARTIDA
@@ -6934,10 +6934,7 @@ namespace SistemaInventario.Reportes
         //franco  26/02/2026
        
         public void Exportar_OrdenCompraKarina_Reporte_Excel()
-        {
-            
-
-
+        {         
             // 1) Plantilla
             string nombreArchivoRel = Convert.ToString(Request.QueryString["NombreArchivo"]);
             string nombreHoja = Convert.ToString(Request.QueryString["NombreHoja"]);
@@ -6966,15 +6963,11 @@ namespace SistemaInventario.Reportes
             objEntidad.CodClasificacion = Convert.ToInt32(Request.QueryString["Filtro_CodClasificacion"]);
             objEntidad.CodEstado = Convert.ToInt32(Request.QueryString["Filtro_CodEstado"]);
 
-
             int iCodEmpresa = 3;
-
             objEntidad.CodTipoOperacion = 2;
             objEntidad.CodEmpresa = iCodEmpresa;
             objEntidad.CodAlmacen = Convert.ToInt32(Session["CodSede"]);
             objEntidad.CodTipoDoc = 7;
-
-
 
             objEntidad.NumeroDoc = (filtroChkNumero == 1) ? objEntidad.NumeroDoc : "";
 
@@ -6996,13 +6989,10 @@ namespace SistemaInventario.Reportes
             NotaIngresoSalidaCabCN objOperacion = new NotaIngresoSalidaCabCN();
 
             DataTable dtTabla = objOperacion.F_ORDENCOMPRA_LISTAR_EXCEL(objEntidad);
-            dtTabla.TableName = "Consulta";
-
-            // (Opcional) seleccionar columnas si no quieres todas:
-            // string[] columnas = { "Col1","Col2","Col3" };
-            // DataTable dtSeleccionado = dtTabla.DefaultView.ToTable(false, columnas);
+            dtTabla.TableName = "Consulta";           
 
             string subtitulo = "REPORTE ORDEN COMPRA";
+            string empresa = "NAME EMPRESA";
 
             using (ExcelPackage pck = new ExcelPackage())
             {
@@ -7021,14 +7011,19 @@ namespace SistemaInventario.Reportes
                 int dataStartRow = 6;
                 ws.DeleteRow(dataStartRow, 50000, true);
 
+                // 7) Nombre Empresa / título (simple)
+                ws.Cells["A1:C1"].Merge = true;
+                ws.Cells["A1"].Value = empresa
+                ws.Cells["A1:C1"].Style.Font.Size = 12;
+
                 // 7) Cabecera / título (simple)
                 ws.Cells["A4"].Value = "DESDE  " + desdeFormato + "   HASTA  " + hastaFormato;
 
-                ws.Cells["A3:AA3"].Merge = true;
+                ws.Cells["A3:R3"].Merge = true;
                 ws.Cells["A3"].Value = subtitulo;
-                ws.Cells["A3:AA3"].Style.Font.Size = 15;
-                ws.Cells["A3:AA3"].Style.Font.Bold = true;
-                ws.Cells["A3:AA3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells["A3:R3"].Style.Font.Size = 15;
+                ws.Cells["A3:R3"].Style.Font.Bold = true;
+                ws.Cells["A3:R3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 ws.Row(3).Height = 25;
 
                 // 8) Cargar tabla
@@ -7036,9 +7031,7 @@ namespace SistemaInventario.Reportes
 
                 int headerRow = dataStartRow;
                 int lastRow = ws.Dimension.End.Row;
-                int lastCol = ws.Dimension.End.Column;
-
-              
+                int lastCol = ws.Dimension.End.Column;             
 
                 // Header style
                 using (var rng = ws.Cells[headerRow, 1, headerRow, lastCol])
