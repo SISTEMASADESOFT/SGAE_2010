@@ -7013,7 +7013,7 @@ namespace SistemaInventario.Reportes
 
                 // 7) Nombre Empresa / título (simple)
                 ws.Cells["A1:C1"].Merge = true;
-                ws.Cells["A1"].Value = empresa
+                ws.Cells["A1"].Value = empresa;
                 ws.Cells["A1:C1"].Style.Font.Size = 12;
 
                 // 7) Cabecera / título (simple)

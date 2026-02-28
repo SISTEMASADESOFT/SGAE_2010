@@ -129,6 +129,7 @@ function F_Controles_Inicializar() {
                     if (str_resultado_operacion == "1") {                   
                         F_Update_Division_HTML('div_Sucursal', result.split('~')[2]);
                         $('#MainContent_ddlSucursal').css('background', '#FFFFE0');
+                        $('#MainContent_ddlTipoProducto').css('background', '#FFFFE0');
                         $('#MainContent_ddlSucursal').val('0');
                     }
                     else {

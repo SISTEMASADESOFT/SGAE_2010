@@ -214,7 +214,7 @@ function F_Reporte() {
     var CodMenu = 718;
     var Titulo = "REPORTE DE CUENTAS BANCARIAS";
     var SubTitulo = "DESDE " + $("#MainContent_txtDesde").val() + " HASTA " + $('#MainContent_txtHasta').val();
-    var NombreHoja = "TARJETASDEPOSITOS";
+    var NombreHoja = "DEPOSITOS";
     var NombreArchivo = "Xls_CuentaBancaria.xlsx";
 
     if ($('#MainContent_ddlMedioPago').val() == 3)
